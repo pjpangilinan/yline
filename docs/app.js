@@ -361,175 +361,174 @@ const songData = {
     ],
         videoSrc: "assets/videos/panic.mp4?v=1"
     },
-    yoshi: {
-        metadata: {"artist": "glass beach", "title": "yoshi's island", "album": "the first glass beach album", "year": 2019},
-        lyrics: `[00:00.16] One, two, three, four
-[00:01.65] One, two, three, four
-[00:05.16] 
-[00:14.99] One, two, three, four
-[00:15.82] Five, six, seven, eight
-[00:18.54] 
-[00:30.86] I can't take the pressure
-[00:32.88] Yeah, everybody thinks that you just need to grow up
-[00:36.35] I know it's hard, it's fucking impossible
-[00:39.76] Tryna make sense of the things that you feel now
-[00:42.90] With spiro and estro from Vanuatu
-[00:46.27] What the hell do you think that'll do to you?
-[00:49.43] I won't say \"she\" even though I know you want me to
-[00:52.70] I know that it's hard but I swear I still love you
-[00:58.03] 
-[01:10.57] I can't take the pressure
-[01:12.55] Cry on the bathroom floor when you look in the mirror
-[01:16.02] Cover your neck or they'll cut your head off
-[01:19.20] J, you're only cute with your heart eyes and legs crossed
-[01:22.85] Write the things you think when you're out of your body
-[01:25.81] Run yourself out of words to say you're hopelessly lonely
-[01:29.17] And don't leave the city and don't leave the covers too
-[01:32.81] I know it's hard but I swear I still love you
-[01:37.06] I am never gonna understand
-[01:40.28] I am never gonna understand
-[01:43.79] I am everything you think about her
-[01:46.17] Behind her back, the whole truth
-[01:48.80] Does it hurt to say you love her like a son?
-[01:53.03] The world could kill her just cause she can't fit in right
-[02:06.25] 
-[02:42.12] Yeah, it'll make it so dangerous
-[02:45.21] When they leave no room to breathe in the space they carved out for us
-[02:48.48] When they get inside your head, give you white lies and black eyes
-[02:51.80] When they try to change your shape until your sense of self dies
-[02:55.15] But you make me feel like I'm out of my body
-[02:58.45] We ran out of words to say we're hopelessly lonely
-[03:01.75] So don't leave the city, please don't leave the covers too
-[03:05.35] Just stay right here babe, let's live life like lovers do
-[03:09.78] I am never gonna understand
-[03:13.12] I am never gonna understand
-[03:16.32] I am everything you think about her
-[03:18.83] Behind her back, the whole truth
-[03:21.38] Does it hurt to say you care about your son?
-[03:25.83] The world could kill her just cause she can't fit in right
-[03:38.31] 
-[04:37.50] (Ooh, woah, oh-oh, oh-oh)
-[04:45.33] (Woah, oh no, no-no-no-no-no-no)
-[04:50.23] (Ooh, woah, oh-oh, oh-oh)
-[04:58.79] (Woah, oh no, no-no-no-no-no-no)
-[05:03.27] (Ooh, woah, oh-oh, oh-oh)
-[05:11.75] (Woah, oh no, no-no-no-no-no-no)
-[05:16.59] (Ooh, woah, oh-oh, oh-oh)
-[05:26.47] 
-[05:38.36] You take spiro and estro from Vanuatu
-[05:41.80] You say you won't think about nothin' but lovin' you
-[05:45.00] We're sleeping harbor seals on the seaside of Malibu
-[05:48.20] Okay, I won't think about nothin' but lovin' you
-[05:51.95] Spiro and estro from Vanuatu
-[05:54.55] You say you won't think about nothin' but lovin' you
-[05:57.75] We're sleeping harbor seals on the seaside of Malibu
-[06:00.91] Okay, I won't think about nothin' but lovin' you too
-[06:04.80] `,
+    angel: {
+        metadata: {"artist": "you are an angel", "title": "kate said", "album": "Unknown", "year": 2024},
+        lyrics: `[00:55.57] It doesn't hurt me
+[00:59.37] Do you wanna feel how it feels?
+[01:02.48] Do you want to know, know that it doesn't hurt me?
+[01:06.24] Do you wanna hear about the deal that I'm making?
+[01:11.93] You
+[01:15.28] It's you and me
+[01:18.06] And if I only could
+[01:22.22] I'd make a deal with God
+[01:24.37] And I'd get Him to swap our places
+[01:27.42] Be running up that road
+[01:30.26] Be running up that hill
+[01:32.40] Be running up that building
+[01:36.27] Say if I only could, oh
+[01:50.13] You don't wanna hurt me
+[01:57.06] But see how deep the bullet lies
+[02:02.06] Unaware I'm tearing you asunder
+[02:06.61] Oh, there is thunder in our hearts
+[02:10.40] Is there so much hate for the ones we love?
+[02:14.03] Oh, tell me we both matter don't we?
+[02:41.02] You
+[02:41.77] It's you and me
+[02:42.42] It's you and me won't be unhappy
+[02:43.14] And if I only could
+[02:43.84] I'd make a deal with God
+[02:44.43] And I'd get Him to swap our places
+[02:45.19] Be running up that road
+[02:45.99] Be running up that hill
+[02:46.59] Be running up that building
+[03:17.76] Say if I only could
+[03:18.66] You
+[03:19.23] It's you and me
+[03:19.94] It's you and me won't be unhappy
+[03:35.74] C'mon baby, c'mon darlin'
+[03:39.42] Let me steal this moment from you now
+[03:43.97] Come on angel, c'mon, c'mon darling
+[03:48.48] Let's exchange the experience, oh
+[05:00.30] And if I only could
+[05:01.14] I'd make a deal with God
+[05:01.90] And I'd get Him to swap our places
+[05:02.67] I'd be running up that road
+[05:03.56] Be running up that hill
+[05:04.27] With no problem
+[05:05.07] Say if I only could
+[05:05.63] I'd make a deal with God
+[05:06.20] And I'd get Him to swap our places
+[05:06.93] Be running up that road, be running up that hill
+[05:08.00] With no problem
+[05:09.42] Say if I only could
+[05:10.23] I'd make a deal with God
+[05:10.85] And I'd get Him to swap our places
+[05:11.44] I'd be running up that road
+[05:12.01] Be running up that hill
+[05:13.16] With no problem
+[05:13.68] Say if I only could
+[05:14.07] Be running up that hill
+[05:14.49] With no problem
+[05:14.87] If I only could, I'd be running out that hill
+[05:15.35] If I only could, I'd be running out that hill`,
         images: [
-        { src: "assets/images/yoshi/img_000.jpg", prompt: "One, two, three, four aesthetic" },
-        { src: "assets/images/yoshi/img_001.jpg", prompt: "One, two, three, four aesthetic" },
-        { src: "assets/images/yoshi/img_002.jpg", prompt: "One, two, three, four aesthetic" },
-        { src: "assets/images/yoshi/img_003.jpg", prompt: "Five, six, seven, eight aesthetic" },
-        { src: "assets/images/yoshi/img_004.jpg", prompt: "I can't take the pressure aesthetic" },
-        { src: "assets/images/yoshi/img_005.jpg", prompt: "Yeah, everybody thinks that yo aesthetic" },
-        { src: "assets/images/yoshi/img_006.jpg", prompt: "I know it's hard, it's fucking aesthetic" },
-        { src: "assets/images/yoshi/img_007.jpg", prompt: "Tryna make sense of the things aesthetic" },
-        { src: "assets/images/yoshi/img_008.jpg", prompt: "With spiro and estro from Vanu aesthetic" },
-        { src: "assets/images/yoshi/img_009.jpg", prompt: "What the hell do you think tha aesthetic" },
-        { src: "assets/images/yoshi/img_010.jpg", prompt: "I won't say \"she\" even though  aesthetic" },
-        { src: "assets/images/yoshi/img_011.jpg", prompt: "I know that it's hard but I sw aesthetic" },
-        { src: "assets/images/yoshi/img_012.jpg", prompt: "I can't take the pressure aesthetic" },
-        { src: "assets/images/yoshi/img_013.jpg", prompt: "Cry on the bathroom floor when aesthetic" },
-        { src: "assets/images/yoshi/img_014.jpg", prompt: "Cover your neck or they'll cut aesthetic" },
-        { src: "assets/images/yoshi/img_015.jpg", prompt: "J, you're only cute with your  aesthetic" },
-        { src: "assets/images/yoshi/img_016.jpg", prompt: "Write the things you think whe aesthetic" },
-        { src: "assets/images/yoshi/img_017.jpg", prompt: "Run yourself out of words to s aesthetic" },
-        { src: "assets/images/yoshi/img_018.jpg", prompt: "And don't leave the city and d aesthetic" },
-        { src: "assets/images/yoshi/img_019.jpg", prompt: "I know it's hard but I swear I aesthetic" },
-        { src: "assets/images/yoshi/img_020.jpg", prompt: "I am never gonna understand aesthetic" },
-        { src: "assets/images/yoshi/img_021.jpg", prompt: "I am never gonna understand aesthetic" },
-        { src: "assets/images/yoshi/img_022.jpg", prompt: "I am everything you think abou aesthetic" },
-        { src: "assets/images/yoshi/img_023.jpg", prompt: "Behind her back, the whole tru aesthetic" },
-        { src: "assets/images/yoshi/img_024.jpg", prompt: "Does it hurt to say you love h aesthetic" },
-        { src: "assets/images/yoshi/img_025.jpg", prompt: "The world could kill her just  aesthetic" },
-        { src: "assets/images/yoshi/img_026.jpg", prompt: "Yeah, it'll make it so dangero aesthetic" },
-        { src: "assets/images/yoshi/img_027.jpg", prompt: "When they leave no room to bre aesthetic" },
-        { src: "assets/images/yoshi/img_028.jpg", prompt: "When they get inside your head aesthetic" },
-        { src: "assets/images/yoshi/img_029.jpg", prompt: "When they try to change your s aesthetic" },
-        { src: "assets/images/yoshi/img_030.jpg", prompt: "But you make me feel like I'm  aesthetic" },
-        { src: "assets/images/yoshi/img_031.jpg", prompt: "We ran out of words to say we' aesthetic" },
-        { src: "assets/images/yoshi/img_032.jpg", prompt: "So don't leave the city, pleas aesthetic" },
-        { src: "assets/images/yoshi/img_033.jpg", prompt: "Just stay right here babe, let aesthetic" },
-        { src: "assets/images/yoshi/img_034.jpg", prompt: "I am never gonna understand aesthetic" },
-        { src: "assets/images/yoshi/img_035.jpg", prompt: "I am never gonna understand aesthetic" },
-        { src: "assets/images/yoshi/img_036.jpg", prompt: "I am everything you think abou aesthetic" },
-        { src: "assets/images/yoshi/img_037.jpg", prompt: "Behind her back, the whole tru aesthetic" },
-        { src: "assets/images/yoshi/img_038.jpg", prompt: "Does it hurt to say you care a aesthetic" },
-        { src: "assets/images/yoshi/img_039.jpg", prompt: "The world could kill her just  aesthetic" },
-        { src: "assets/images/yoshi/img_040.jpg", prompt: "(Ooh, woah, oh-oh, oh-oh) aesthetic" },
-        { src: "assets/images/yoshi/img_041.jpg", prompt: "(Woah, oh no, no-no-no-no-no-n aesthetic" },
-        { src: "assets/images/yoshi/img_042.jpg", prompt: "(Ooh, woah, oh-oh, oh-oh) aesthetic" },
-        { src: "assets/images/yoshi/img_043.jpg", prompt: "(Woah, oh no, no-no-no-no-no-n aesthetic" },
-        { src: "assets/images/yoshi/img_044.jpg", prompt: "(Ooh, woah, oh-oh, oh-oh) aesthetic" },
-        { src: "assets/images/yoshi/img_045.jpg", prompt: "(Woah, oh no, no-no-no-no-no-n aesthetic" },
-        { src: "assets/images/yoshi/img_046.jpg", prompt: "(Ooh, woah, oh-oh, oh-oh) aesthetic" },
-        { src: "assets/images/yoshi/img_047.jpg", prompt: "You take spiro and estro from  aesthetic" },
-        { src: "assets/images/yoshi/img_048.jpg", prompt: "You say you won't think about  aesthetic" },
-        { src: "assets/images/yoshi/img_049.jpg", prompt: "We're sleeping harbor seals on aesthetic" },
-        { src: "assets/images/yoshi/img_050.jpg", prompt: "Okay, I won't think about noth aesthetic" },
-        { src: "assets/images/yoshi/img_051.jpg", prompt: "Spiro and estro from Vanuatu aesthetic" },
-        { src: "assets/images/yoshi/img_052.jpg", prompt: "You say you won't think about  aesthetic" },
-        { src: "assets/images/yoshi/img_053.jpg", prompt: "We're sleeping harbor seals on aesthetic" },
-        { src: "assets/images/yoshi/img_054.jpg", prompt: "Okay, I won't think about noth aesthetic" }
+        { src: "assets/images/angel/img_000.jpg", prompt: "It doesn't hurt me aesthetic" },
+        { src: "assets/images/angel/img_001.jpg", prompt: "Do you wanna feel how it feels aesthetic" },
+        { src: "assets/images/angel/img_002.jpg", prompt: "Do you want to know, know that aesthetic" },
+        { src: "assets/images/angel/img_003.jpg", prompt: "Do you wanna hear about the de aesthetic" },
+        { src: "assets/images/angel/img_004.jpg", prompt: "You aesthetic" },
+        { src: "assets/images/angel/img_005.jpg", prompt: "It's you and me aesthetic" },
+        { src: "assets/images/angel/img_006.jpg", prompt: "And if I only could aesthetic" },
+        { src: "assets/images/angel/img_007.jpg", prompt: "I'd make a deal with God aesthetic" },
+        { src: "assets/images/angel/img_008.jpg", prompt: "And I'd get Him to swap our pl aesthetic" },
+        { src: "assets/images/angel/img_009.jpg", prompt: "Be running up that road aesthetic" },
+        { src: "assets/images/angel/img_010.jpg", prompt: "Be running up that hill aesthetic" },
+        { src: "assets/images/angel/img_011.jpg", prompt: "Be running up that building aesthetic" },
+        { src: "assets/images/angel/img_012.jpg", prompt: "Say if I only could, oh aesthetic" },
+        { src: "assets/images/angel/img_013.jpg", prompt: "You don't wanna hurt me aesthetic" },
+        { src: "assets/images/angel/img_014.jpg", prompt: "But see how deep the bullet li aesthetic" },
+        { src: "assets/images/angel/img_015.jpg", prompt: "Unaware I'm tearing you asunder" },
+        { src: "assets/images/angel/img_016.jpg", prompt: "there is thunder in our hearts" },
+        { src: "assets/images/angel/img_017.jpg", prompt: "Is there so much hate for the ones we love" },
+        { src: "assets/images/angel/img_018.jpg", prompt: "tell me we both matter don't we" },
+        { src: "assets/images/angel/img_019.jpg", prompt: "You" },
+        { src: "assets/images/angel/img_020.jpg", prompt: "It's you and me" },
+        { src: "assets/images/angel/img_021.jpg", prompt: "It's you and me won't be unhappy" },
+        { src: "assets/images/angel/img_022.jpg", prompt: "And if I only could" },
+        { src: "assets/images/angel/img_023.jpg", prompt: "I'd make a deal with God" },
+        { src: "assets/images/angel/img_024.jpg", prompt: "And I'd get Him to swap our places" },
+        { src: "assets/images/angel/img_025.jpg", prompt: "Be running up that road" },
+        { src: "assets/images/angel/img_026.jpg", prompt: "Be running up that hill" },
+        { src: "assets/images/angel/img_027.jpg", prompt: "Be running up that building" },
+        { src: "assets/images/angel/img_028.jpg", prompt: "Say if I only could" },
+        { src: "assets/images/angel/img_029.jpg", prompt: "You" },
+        { src: "assets/images/angel/img_030.jpg", prompt: "It's you and me aesthetic" },
+        { src: "assets/images/angel/img_031.jpg", prompt: "It's you and me won't be unhap aesthetic" },
+        { src: "assets/images/angel/img_032.jpg", prompt: "C'mon baby, c'mon darlin' aesthetic" },
+        { src: "assets/images/angel/img_033.jpg", prompt: "Let me steal this moment from  aesthetic" },
+        { src: "assets/images/angel/img_034.jpg", prompt: "Come on angel, c'mon, c'mon da aesthetic" },
+        { src: "assets/images/angel/img_035.jpg", prompt: "Let's exchange the experience, aesthetic" },
+        { src: "assets/images/angel/img_036.jpg", prompt: "And if I only could aesthetic" },
+        { src: "assets/images/angel/img_037.jpg", prompt: "I'd make a deal with God aesthetic" },
+        { src: "assets/images/angel/img_038.jpg", prompt: "And I'd get Him to swap our pl aesthetic" },
+        { src: "assets/images/angel/img_039.jpg", prompt: "I'd be running up that road aesthetic" },
+        { src: "assets/images/angel/img_040.jpg", prompt: "Be running up that hill aesthetic" },
+        { src: "assets/images/angel/img_041.jpg", prompt: "With no problem aesthetic" },
+        { src: "assets/images/angel/img_042.jpg", prompt: "Say if I only could aesthetic" },
+        { src: "assets/images/angel/img_043.jpg", prompt: "I'd make a deal with God aesthetic" },
+        { src: "assets/images/angel/img_044.jpg", prompt: "And I'd get Him to swap our pl aesthetic" },
+        { src: "assets/images/angel/img_045.jpg", prompt: "be running up that road be running up that hill" },
+        { src: "assets/images/angel/img_046.jpg", prompt: "with no problem" },
+        { src: "assets/images/angel/img_047.jpg", prompt: "say if i only could" },
+        { src: "assets/images/angel/img_048.jpg", prompt: "i'd make a deal with god" },
+        { src: "assets/images/angel/img_049.jpg", prompt: "and i'd get him to swap our places" },
+        { src: "assets/images/angel/img_050.jpg", prompt: "i'd be running up that road" },
+        { src: "assets/images/angel/img_051.jpg", prompt: "be running up that hill" },
+        { src: "assets/images/angel/img_052.jpg", prompt: "with no problem" },
+        { src: "assets/images/angel/img_053.jpg", prompt: "say if i only could" },
+        { src: "assets/images/angel/img_054.jpg", prompt: "be running up that hill" },
+        { src: "assets/images/angel/img_055.jpg", prompt: "with no problem" },
+        { src: "assets/images/angel/img_056.jpg", prompt: "if i only could i'd be running out that hill" },
+        { src: "assets/images/angel/img_057.jpg", prompt: "if i only could i'd be running out that hill" }
     ],
-        videoSrc: "assets/videos/yoshi.mp4?v=1"
+        videoSrc: "assets/videos/angel.mp4?v=1"
     },
     rorschach: {
         metadata: {"artist": "The Ridleys", "title": "Rorschach Blots", "album": "Until I Reach The Sun Vol. 2", "year": 2021},
-        lyrics: `[00:12.86] Give me time and I will learn the art
-[00:19.28] Of choosing my mind over my heart
-[00:25.33] Staring at the shadows all alone
-[00:31.82] Driven by the longing to go home
-[00:37.83] 'Cause honestly
-[00:41.09] It feels so safe around you
-[00:46.94] It's unsettling
-[00:49.71] She don't know what it means but it doesn't matter
-[00:53.12] The fact is I can't forget her
-[00:56.74] All these Rorschach blots, bottles of scotch
-[00:59.49] Are driving me insane
-[01:03.77] In every single circumstance
-[01:06.46] We keep things in a way that makes more sense
-[01:09.40] All these Rorschach blots, bottles of scotch
-[01:12.43] Are messing with my brain
-[01:29.47] Build a wooden boat to sail away
-[01:35.37] All the sins that haunt you everyday
-[01:42.15] As we drift there's nothing left to save
-[01:48.03] 'Cause starlit ocean, you will be my grave
-[01:54.65] And honestly
-[01:57.55] It feels so safe around you
-[02:03.41] It's unsettling
-[02:06.97] I don't know what it means but it doesn't matter
-[02:10.28] The fact is I can't forget her
-[02:13.61] All these Rorschach blots, bottles of scotch
-[02:16.39] Are driving me insane
-[02:20.36] In every single circumstance
-[02:23.21] We keep things in a way that makes more sense
-[02:26.73] All these Rorschach blots, bottles of scotch
-[02:29.11] Are messing with my brain
-[02:32.07] She don't know what it means but it doesn't matter
-[02:35.80] The fact is I can't forget her
-[02:39.50] All these Rorschach blots, bottles of scotch
-[02:42.09] Are driving me insane
-[02:46.32] In every single circumstance
-[02:48.74] We keep things in a way that makes more sense
-[02:51.98] All these Rorschach blots, bottles of scotch
-[02:54.76] Are messing with my brain
-[03:11.64] In every single circumstance
-[03:14.50] We keep things in a way that makes more sense
-[03:23.89] In every single circumstance
-[03:27.03] We keep things in a way that makes more sense
-[03:30.18] All these Rorschach blots, bottles of scotch
-[03:33.05] Are messing with me`,
+        lyrics: `[00:15.86] Give me time and I will learn the art
+[00:22.28] Of choosing my mind over my heart
+[00:28.33] Staring at the shadows all alone
+[00:34.82] Driven by the longing to go home
+[00:40.83] 'Cause honestly
+[00:44.09] It feels so safe around you
+[00:49.94] It's unsettling
+[00:52.71] She don't know what it means but it doesn't matter
+[00:56.12] The fact is I can't forget her
+[00:59.74] All these Rorschach blots, bottles of scotch
+[01:02.49] Are driving me insane
+[01:06.77] In every single circumstance
+[01:09.46] We keep things in a way that makes more sense
+[01:12.40] All these Rorschach blots, bottles of scotch
+[01:15.43] Are messing with my brain
+[01:32.47] Build a wooden boat to sail away
+[01:38.37] All the sins that haunt you everyday
+[01:45.15] As we drift there's nothing left to save
+[01:51.03] 'Cause starlit ocean, you will be my grave
+[01:57.65] And honestly
+[02:00.55] It feels so safe around you
+[02:06.41] It's unsettling
+[02:09.97] I don't know what it means but it doesn't matter
+[02:13.28] The fact is I can't forget her
+[02:16.61] All these Rorschach blots, bottles of scotch
+[02:19.39] Are driving me insane
+[02:23.36] In every single circumstance
+[02:26.21] We keep things in a way that makes more sense
+[02:29.73] All these Rorschach blots, bottles of scotch
+[02:32.11] Are messing with my brain
+[02:35.07] She don't know what it means but it doesn't matter
+[02:38.80] The fact is I can't forget her
+[02:42.50] All these Rorschach blots, bottles of scotch
+[02:45.09] Are driving me insane
+[02:49.32] In every single circumstance
+[02:51.74] We keep things in a way that makes more sense
+[02:54.98] All these Rorschach blots, bottles of scotch
+[02:57.76] Are messing with my brain
+[03:14.64] In every single circumstance
+[03:17.50] We keep things in a way that makes more sense
+[03:26.89] In every single circumstance
+[03:30.03] We keep things in a way that makes more sense
+[03:33.18] All these Rorschach blots, bottles of scotch
+[03:36.05] Are messing with me`,
         images: [
         { src: "assets/images/rorschach/img_000.jpg", prompt: "Give me time and I will learn  aesthetic" },
         { src: "assets/images/rorschach/img_001.jpg", prompt: "Of choosing my mind over my he aesthetic" },
@@ -576,7 +575,7 @@ const songData = {
         { src: "assets/images/rorschach/img_042.jpg", prompt: "All these Rorschach blots, bot aesthetic" },
         { src: "assets/images/rorschach/img_043.jpg", prompt: "Are messing with me aesthetic" }
     ],
-        videoSrc: "assets/videos/rorschach.mp4?v=1"
+        videoSrc: "assets/videos/rorschach.mp4?v=2"
     }
 };
 function loadSong(songKey) {
