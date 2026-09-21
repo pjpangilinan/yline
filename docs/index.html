@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YLine - AI Lyric Videos</title>
+    <link rel="stylesheet" href="styles.css?v=6">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Side Progress Tracker -->
+    <nav class="scroll-tracker" id="scrollTracker">
+        <div class="tracker-node active" data-target="hero">Start</div>
+        <div class="tracker-line"></div>
+        <div class="tracker-node" data-target="step1">Resolve</div>
+        <div class="tracker-line"></div>
+        <div class="tracker-node" data-target="step2">Lyrics</div>
+        <div class="tracker-line"></div>
+        <div class="tracker-node" data-target="step3">Images</div>
+        <div class="tracker-line"></div>
+        <div class="tracker-node" data-target="step4">Assembly</div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <h1 class="hero-title">YLine</h1>
+        <p class="hero-subtitle">Autonomous agents building aesthetic lyric videos.</p>
+        
+        <div class="song-selector">
+            <p>Select a generation to explore the pipeline</p>
+            <div class="song-cards">
+                <button class="song-btn" onclick="loadSong('color')">
+                    <span class="artist">Lotus Juice</span>
+                    <span class="title">Color Your Night</span>
+                </button>
+                <button class="song-btn" onclick="loadSong('birds')">
+                    <span class="artist">Billie Eilish</span>
+                    <span class="title">BIRDS OF A FEATHER</span>
+                </button>
+                <button class="song-btn" onclick="loadSong('panic')">
+                    <span class="artist">Panic! at the Disco</span>
+                    <span class="title">London Beckoned...</span>
+                </button>
+                <button class="song-btn" onclick="loadSong('yoshi')">
+                    <span class="artist">glass beach</span>
+                    <span class="title">yoshi's island</span>
+                </button>
+                <button class="song-btn" onclick="loadSong('rorschach')">
+                    <span class="artist">The Ridleys</span>
+                    <span class="title">Rorschach Blots</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Scrollytelling Section -->
+    <main id="pipeline-container" class="pipeline hidden">
+        
+        <!-- Step 1 -->
+        <section class="step" id="step1">
+            <div class="step-grid-left">
+                <div class="step-text">
+                    <h2>01. Song Resolver</h2>
+                    <p>User queries can be messy. The agent parses the request and talks to the MusicBrainz API to find the exact track metadata.</p>
+                </div>
+                <div class="vscode-window">
+                    <div class="vscode-header">metadata.json - VS Code</div>
+                    <div class="vscode-body" id="out-metadata">Waiting...</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Step 2 -->
+        <section class="step" id="step2">
+            <div class="step-grid-right">
+                <div class="step-text">
+                    <h2>02. Lyrics Agent</h2>
+                    <p>The system taps into LRCLIB for perfectly timed, human-verified `.lrc` sync files. If missing, it pivots to Genius and uses an LLM to predict timestamps.</p>
+                </div>
+                <div class="terminal-window">
+                    <div class="terminal-header">
+                        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                    </div>
+                    <div class="terminal-body" id="out-lyrics">> Fetching LRC...</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Step 3 -->
+        <section class="step" id="step3">
+            <div class="step-grid-left">
+                <div class="step-text">
+                    <h2>03. Image Agent</h2>
+                    <p>For every lyric line, an LLM constructs an aesthetic search query to scrape high-quality imagery matching the mood.</p>
+                </div>
+                <div class="image-grid" id="out-images">
+                    <!-- Injected by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 4 -->
+        <section class="step" id="step4">
+            <div class="step-grid-right">
+                <div class="step-text">
+                    <h2>04. Final Assembly</h2>
+                    <p>MoviePy stitches the LLM images, text timings, and audio into the final output.</p>
+                    <h3 id="current-song-title" style="margin-top: 1rem; color: var(--accent);"></h3>
+                </div>
+                <div class="video-container">
+                    <video id="out-video" controls playsinline></video>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <a href="#" class="back-to-top" id="backToTop">↑</a>
+
+    <script src="app.js?v=6"></script>
+</body>
+</html>

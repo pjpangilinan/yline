@@ -1,0 +1,40 @@
+﻿# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+env/
+venv/
+
+# Environment variables (secrets)
+.env
+
+# Generated output
+output/
+scratch/
+*.mp4
+*.mp3
+*.wav
+
+# Exception for frontend showcase videos
+!docs/assets/videos/*.mp4
+
+# Antigravity / Agents
+.agents/
+.gemini/
+brain/
+*state.json
+*.log
+bug_report.md
+STATE.md
+AGENTS.md
+IMPLEMENTATION.md
+
+# OS files
+.DS_Store
+Thumbs.db
