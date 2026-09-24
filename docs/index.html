@@ -63,11 +63,20 @@
                     <span class="title">Kalapastangan</span>
                 </button>
             </div>
+            
+            <div class="hero-actions">
+                <button class="hero-action-btn" onclick="document.getElementById('step1').scrollIntoView({ behavior: 'smooth' })">
+                    <span>Explore Pipeline ↓</span>
+                </button>
+                <button class="hero-action-btn primary" onclick="document.getElementById('step4').scrollIntoView({ behavior: 'smooth' })">
+                    <span>Watch Final Video ▶</span>
+                </button>
+            </div>
         </div>
     </header>
 
     <!-- Scrollytelling Section -->
-    <main id="pipeline-container" class="pipeline hidden">
+    <main id="pipeline-container" class="pipeline">
         
         <!-- Step 1 -->
         <section class="step" id="step1">

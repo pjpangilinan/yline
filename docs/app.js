@@ -518,38 +518,72 @@ const songData = {
     }
 };
 
-function loadSong(songKey) {
+function loadSong(songKey, shouldScroll = true) {
     const data = songData[songKey];
     if (!data) return;
 
+    // Update active button state
+    document.querySelectorAll('.song-btn').forEach(btn => {
+        if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(`'${songKey}'`)) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
     // Render metadata as formatted JSON string
     const metaContainer = document.getElementById('out-metadata');
-    metaContainer.innerHTML = `<pre style="margin:0; padding:1rem; overflow-x:auto;">${JSON.stringify(data.metadata, null, 2)}</pre>`;
+    if (metaContainer) {
+        metaContainer.innerHTML = `<pre style="margin:0; padding:1rem; overflow-x:auto;">${JSON.stringify(data.metadata, null, 2)}</pre>`;
+    }
     
     // Set current song title
-    document.getElementById('current-song-title').textContent = `${data.metadata.artist} - ${data.metadata.title}`;
+    const titleEl = document.getElementById('current-song-title');
+    if (titleEl) {
+        titleEl.textContent = `${data.metadata.artist} - ${data.metadata.title}`;
+    }
 
     // Render lyrics text
     const lyricsContainer = document.getElementById('out-lyrics');
-    lyricsContainer.textContent = data.lyrics;
+    if (lyricsContainer) {
+        lyricsContainer.textContent = data.lyrics;
+    }
     
     const imgGrid = document.getElementById('out-images');
-    imgGrid.innerHTML = data.images.slice(0, 4).map(img => `
-        <div class="img-card">
-            <img src="${img.src}" alt="${img.prompt}">
-            <div class="prompt-text">${img.prompt}</div>
-        </div>
-    `).join('');
+    if (imgGrid) {
+        imgGrid.innerHTML = data.images.slice(0, 4).map(img => `
+            <div class="img-card">
+                <img src="${img.src}" alt="${img.prompt}">
+                <div class="prompt-text">${img.prompt}</div>
+            </div>
+        `).join('');
+    }
 
     const vid = document.getElementById('out-video');
-    vid.src = data.videoSrc;
-    vid.load();
+    if (vid) {
+        vid.src = data.videoSrc;
+        vid.load();
+    }
 
-    document.getElementById('pipeline-container').classList.remove('hidden');
+    const pipeline = document.getElementById('pipeline-container');
+    if (pipeline) {
+        pipeline.classList.remove('hidden');
+    }
     
-    // Scroll to first step
-    window.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
+    if (shouldScroll) {
+        setTimeout(() => {
+            const step1 = document.getElementById('step1');
+            if (step1) {
+                step1.scrollIntoView({ behavior: 'smooth' });
+            }
+        }, 50);
+    }
 }
+
+// Initialize on page load without auto-scrolling
+window.addEventListener('DOMContentLoaded', () => {
+    loadSong('color', false);
+});
 
 // Intersection Observer for Slide-In Animation
 const steps = document.querySelectorAll('.step');
