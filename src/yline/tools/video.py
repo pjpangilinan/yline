@@ -1,8 +1,9 @@
+from __future__ import annotations
+from langsmith import traceable
 """Video assembly tool — builds lyric videos with MoviePy 2.x.
 
 Composites text overlays on background images, synced to audio.
 """
-from __future__ import annotations
 
 import logging
 import os
@@ -20,6 +21,7 @@ from moviepy import (
 logger = logging.getLogger(__name__)
 
 
+@traceable
 def assemble_video(
     lyrics: list[dict[str, Any]],
     image_paths: list[str],
@@ -198,16 +200,28 @@ def assemble_video(
         # Visual is longer than audio (rare, but truncate visual)
         final = final.with_duration(audio.duration).with_audio(audio)
 
-    # Write output
-    final.write_videofile(
-        output_path,
-        fps=24,
-        codec="h264_nvenc",
-        audio_codec="aac",
-        threads=16,
-        ffmpeg_params=["-pix_fmt", "yuv420p", "-movflags", "+faststart", "-preset", "p4", "-tune", "hq"],
-        logger="bar",  # Enable moviepy progress bar
-    )
+    # Write output (try GPU nvenc first, fallback to CPU libx264)
+    try:
+        final.write_videofile(
+            output_path,
+            fps=24,
+            codec="h264_nvenc",
+            audio_codec="aac",
+            threads=16,
+            ffmpeg_params=["-pix_fmt", "yuv420p", "-movflags", "+faststart", "-preset", "p4", "-tune", "hq"],
+            logger="bar",
+        )
+    except Exception as e:
+        logger.warning(f"NVENC encoding failed ({e}), falling back to libx264 CPU encoder...")
+        final.write_videofile(
+            output_path,
+            fps=24,
+            codec="libx264",
+            audio_codec="aac",
+            threads=8,
+            ffmpeg_params=["-pix_fmt", "yuv420p", "-movflags", "+faststart", "-preset", "medium"],
+            logger="bar",
+        )
 
     return output_path
 

@@ -3,11 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YLine - AI Lyric Videos</title>
-    <link rel="stylesheet" href="styles.css?v=6">
+    <title>YLine — AI Lyric Video Pipeline Showcase</title>
+    <meta name="description" content="Interactive multi-agent pipeline showcase: autonomous agents generating perfectly timed aesthetic lyric videos.">
+    <meta property="og:title" content="YLine — AI Lyric Video Pipeline Showcase">
+    <meta property="og:description" content="Autonomous agents building synced, aesthetic lyric videos from song queries.">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#dc143c">
+    <link rel="stylesheet" href="styles.css?v=21">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- GitHub Repo Badge -->
+    <a href="https://github.com/pjpangilinan/yline" target="_blank" rel="noopener noreferrer" class="github-badge" title="View Source on GitHub">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+        </svg>
+        <span>GitHub</span>
+    </a>
+
     <!-- Side Progress Tracker -->
     <nav class="scroll-tracker" id="scrollTracker">
         <div class="tracker-node active" data-target="hero">Start</div>
@@ -29,25 +42,25 @@
         <div class="song-selector">
             <p>Select a generation to explore the pipeline</p>
             <div class="song-cards">
-                <button class="song-btn" onclick="loadSong('color')">
+                <button class="song-btn active" onclick="loadSong('color')">
                     <span class="artist">Lotus Juice</span>
                     <span class="title">Color Your Night</span>
-                </button>
-                <button class="song-btn" onclick="loadSong('birds')">
-                    <span class="artist">Billie Eilish</span>
-                    <span class="title">BIRDS OF A FEATHER</span>
                 </button>
                 <button class="song-btn" onclick="loadSong('panic')">
                     <span class="artist">Panic! at the Disco</span>
                     <span class="title">London Beckoned...</span>
                 </button>
-                <button class="song-btn" onclick="loadSong('yoshi')">
-                    <span class="artist">glass beach</span>
-                    <span class="title">yoshi's island</span>
+                <button class="song-btn" onclick="loadSong('take_me_dancing')">
+                    <span class="artist">Will Joseph Cook</span>
+                    <span class="title">Take Me Dancing</span>
                 </button>
-                <button class="song-btn" onclick="loadSong('rorschach')">
-                    <span class="artist">The Ridleys</span>
-                    <span class="title">Rorschach Blots</span>
+                <button class="song-btn" onclick="loadSong('jane')">
+                    <span class="artist">The Long Faces</span>
+                    <span class="title">Jane!</span>
+                </button>
+                <button class="song-btn" onclick="loadSong('kalapastangan')">
+                    <span class="artist">fitterkarma</span>
+                    <span class="title">Kalapastangan</span>
                 </button>
             </div>
         </div>
@@ -117,6 +130,6 @@
 
     <a href="#" class="back-to-top" id="backToTop">↑</a>
 
-    <script src="app.js?v=7"></script>
+    <script src="app.js?v=21"></script>
 </body>
 </html>

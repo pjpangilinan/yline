@@ -1,3 +1,4 @@
+// YLine Pipeline Showcase Logic
 
 const songData = {
     color: {
@@ -124,97 +125,7 @@ const songData = {
         ],
         videoSrc: "assets/videos/color.mp4?v=2"
     },
-    birds: {
-        metadata: {"artist": "Billie Eilish", "title": "BIRDS OF A FEATHER", "album": "HIT ME HARD AND SOFT", "year": 2024},
-        lyrics: `[00:02.25] Uh, ta-da
-[00:03.16] Ta-da-da-da-da-da-da
-[00:04.03] Hm-mm-mm-mm-mm
-[00:04.65] Well, I want you to stay
-[00:08.43] Until I'm in the grave
-[00:13.02] Until I rot away, dead and buried
-[00:17.54] 'Til I'm the casket you carry
-[00:21.30] If you go, I'm goin' too, uh
-[00:26.30] 'Cause it was always you, alright
-[00:31.11] And if I'm turning blue, please, don't save me
-[00:35.72] Nothin' left to lose without my baby
-[00:41.33] Birds of a feather, we should stick together, I know
-[00:46.39] I said I'd never think I wasn't better alone
-[00:51.18] Can't change the weather, might not be forever
-[00:55.27] But if it's forever, it's even better
-[01:00.45] And I don't know what I'm crying for
-[01:05.20] I don't think I could love you more
-[01:09.73] Might not be long, but, baby, I
-[01:15.74] Well, I'll love you 'til the day that I die
-[01:21.16] 'Til the day that I die, ah
-[01:25.79] 'Til the light leaves my eyes
-[01:30.38] Until the day that I die, I
-[01:35.60] I want you to see, oh-oh
-[01:40.19] How you look to me, uh
-[01:44.56] You wouldn't believe if I told ya
-[01:49.04] You would keep the compliments I throw ya
-[01:53.99] But you're so full of shit, uh
-[01:58.69] Tell me it's a bit, no
-[02:03.23] Say you don't see it, your mind's polluted
-[02:07.70] Say you wanna quit, don't be stupid
-[02:14.06] Oh, I don't know what I'm crying for
-[02:18.99] I don't think I could love you more
-[02:23.67] Might not be long but, baby, I
-[02:29.89] Don't wanna say goodbye
-[02:32.54] Birds of a feather, we should stick together, I know
-[02:36.31] I said I'd never think I wasn't better alone
-[02:41.01] Can't change the weather, might not be forever
-[02:45.79] But if it's forever, it's even better, huh
-[02:50.01] It's even better
-[02:51.42] Da-da-da-da-da, hm-mm
-[02:54.60] Da-da-da-da-da, yeah
-[02:56.33] `,
-        images: [
-            { src: "assets/images/birds/img_000.jpg", prompt: "Uh, ta-da aesthetic" },
-            { src: "assets/images/birds/img_001.jpg", prompt: "Ta-da-da-da-da-da-da aesthetic" },
-            { src: "assets/images/birds/img_002.jpg", prompt: "Hm-mm-mm-mm-mm aesthetic" },
-            { src: "assets/images/birds/img_003.jpg", prompt: "Well, I want you to stay aesthetic" },
-            { src: "assets/images/birds/img_004.jpg", prompt: "Until I'm in the grave aesthetic" },
-            { src: "assets/images/birds/img_005.jpg", prompt: "Until I rot away, dead and bur aesthetic" },
-            { src: "assets/images/birds/img_006.jpg", prompt: "'Til I'm the casket you carry aesthetic" },
-            { src: "assets/images/birds/img_007.jpg", prompt: "If you go, I'm goin' too, uh aesthetic" },
-            { src: "assets/images/birds/img_008.jpg", prompt: "'Cause it was always you, alri aesthetic" },
-            { src: "assets/images/birds/img_009.jpg", prompt: "And if I'm turning blue, pleas aesthetic" },
-            { src: "assets/images/birds/img_010.jpg", prompt: "Nothin' left to lose without m aesthetic" },
-            { src: "assets/images/birds/img_011.jpg", prompt: "Birds of a feather, we should  aesthetic" },
-            { src: "assets/images/birds/img_012.jpg", prompt: "I said I'd never think I wasn' aesthetic" },
-            { src: "assets/images/birds/img_013.jpg", prompt: "Can't change the weather, migh aesthetic" },
-            { src: "assets/images/birds/img_014.jpg", prompt: "But if it's forever, it's even aesthetic" },
-            { src: "assets/images/birds/img_015.jpg", prompt: "And I don't know what I'm cryi aesthetic" },
-            { src: "assets/images/birds/img_016.jpg", prompt: "I don't think I could love you aesthetic" },
-            { src: "assets/images/birds/img_017.jpg", prompt: "Might not be long, but, baby,  aesthetic" },
-            { src: "assets/images/birds/img_018.jpg", prompt: "Well, I'll love you 'til the d aesthetic" },
-            { src: "assets/images/birds/img_019.jpg", prompt: "'Til the day that I die, ah aesthetic" },
-            { src: "assets/images/birds/img_020.jpg", prompt: "'Til the light leaves my eyes aesthetic" },
-            { src: "assets/images/birds/img_021.jpg", prompt: "Until the day that I die, I aesthetic" },
-            { src: "assets/images/birds/img_022.jpg", prompt: "I want you to see, oh-oh aesthetic" },
-            { src: "assets/images/birds/img_023.jpg", prompt: "How you look to me, uh aesthetic" },
-            { src: "assets/images/birds/img_024.jpg", prompt: "You wouldn't believe if I told aesthetic" },
-            { src: "assets/images/birds/img_025.jpg", prompt: "You would keep the compliments aesthetic" },
-            { src: "assets/images/birds/img_026.jpg", prompt: "But you're so full of shit, uh aesthetic" },
-            { src: "assets/images/birds/img_027.jpg", prompt: "Tell me it's a bit, no aesthetic" },
-            { src: "assets/images/birds/img_028.jpg", prompt: "Say you don't see it, your min aesthetic" },
-            { src: "assets/images/birds/img_029.jpg", prompt: "Say you wanna quit, don't be s aesthetic" },
-            { src: "assets/images/birds/img_030.jpg", prompt: "Oh, I don't know what I'm cryi aesthetic" },
-            { src: "assets/images/birds/img_031.jpg", prompt: "I don't think I could love you aesthetic" },
-            { src: "assets/images/birds/img_032.jpg", prompt: "Might not be long but, baby, I aesthetic" },
-            { src: "assets/images/birds/img_033.jpg", prompt: "Don't wanna say goodbye aesthetic" },
-            { src: "assets/images/birds/img_034.jpg", prompt: "Birds of a feather, we should  aesthetic" },
-            { src: "assets/images/birds/img_035.jpg", prompt: "I said I'd never think I wasn' aesthetic" },
-            { src: "assets/images/birds/img_036.jpg", prompt: "Can't change the weather, migh aesthetic" },
-            { src: "assets/images/birds/img_037.jpg", prompt: "But if it's forever, it's even aesthetic" },
-            { src: "assets/images/birds/img_038.jpg", prompt: "It's even better aesthetic" },
-            { src: "assets/images/birds/img_039.jpg", prompt: "Da-da-da-da-da, hm-mm aesthetic" },
-            { src: "assets/images/birds/img_040.jpg", prompt: "Da-da-da-da-da, yeah aesthetic" }
-        ],
-        videoSrc: "assets/videos/birds.mp4?v=2"
-    }
-    ,
-        panic: {
+    panic: {
         metadata: {"artist": "Panic! at the Disco", "title": "London Beckoned Songs About Money Written by Machines", "album": "A Fever You Can't Sweat Out", "year": 2005},
         lyrics: `[00:01.02] Stop stalling, make a name for yourself
 [00:03.16] Boy, you'd better put that pen to paper, charm your way out
@@ -361,223 +272,252 @@ const songData = {
     ],
         videoSrc: "assets/videos/panic.mp4?v=1"
     },
-    angel: {
-        metadata: {"artist": "you are an angel", "title": "kate said", "album": "Unknown", "year": 2024},
-        lyrics: `[00:55.57] It doesn't hurt me
-[00:59.37] Do you wanna feel how it feels?
-[01:02.48] Do you want to know, know that it doesn't hurt me?
-[01:06.24] Do you wanna hear about the deal that I'm making?
-[01:11.93] You
-[01:15.28] It's you and me
-[01:18.06] And if I only could
-[01:22.22] I'd make a deal with God
-[01:24.37] And I'd get Him to swap our places
-[01:27.42] Be running up that road
-[01:30.26] Be running up that hill
-[01:32.40] Be running up that building
-[01:36.27] Say if I only could, oh
-[01:50.13] You don't wanna hurt me
-[01:57.06] But see how deep the bullet lies
-[02:02.06] Unaware I'm tearing you asunder
-[02:06.61] Oh, there is thunder in our hearts
-[02:10.40] Is there so much hate for the ones we love?
-[02:14.03] Oh, tell me we both matter don't we?
-[02:41.02] You
-[02:41.77] It's you and me
-[02:42.42] It's you and me won't be unhappy
-[02:43.14] And if I only could
-[02:43.84] I'd make a deal with God
-[02:44.43] And I'd get Him to swap our places
-[02:45.19] Be running up that road
-[02:45.99] Be running up that hill
-[02:46.59] Be running up that building
-[03:17.76] Say if I only could
-[03:18.66] You
-[03:19.23] It's you and me
-[03:19.94] It's you and me won't be unhappy
-[03:35.74] C'mon baby, c'mon darlin'
-[03:39.42] Let me steal this moment from you now
-[03:43.97] Come on angel, c'mon, c'mon darling
-[03:48.48] Let's exchange the experience, oh
-[05:00.30] And if I only could
-[05:01.14] I'd make a deal with God
-[05:01.90] And I'd get Him to swap our places
-[05:02.67] I'd be running up that road
-[05:03.56] Be running up that hill
-[05:04.27] With no problem
-[05:05.07] Say if I only could
-[05:05.63] I'd make a deal with God
-[05:06.20] And I'd get Him to swap our places
-[05:06.93] Be running up that road, be running up that hill
-[05:08.00] With no problem
-[05:09.42] Say if I only could
-[05:10.23] I'd make a deal with God
-[05:10.85] And I'd get Him to swap our places
-[05:11.44] I'd be running up that road
-[05:12.01] Be running up that hill
-[05:13.16] With no problem
-[05:13.68] Say if I only could
-[05:14.07] Be running up that hill
-[05:14.49] With no problem
-[05:14.87] If I only could, I'd be running out that hill
-[05:15.35] If I only could, I'd be running out that hill`,
+    take_me_dancing: {
+        metadata: {"artist": "Will Joseph Cook", "title": "Take Me Dancing", "album": "Sweet Jelly Roll", "year": 2016},
+        lyrics: `[00:01.74] Here's to Julian, a man among a million others
+[00:06.88] Turned his back upon it all
+[00:12.57] Raise another glass then smash it up into its fragments
+[00:18.65] Walking barefoot on the ground
+[00:23.09] And as I fall into the bottle bank (broken glass)
+[00:29.03] You can make me into anything
+[00:32.07] As long as I'm reflecting you
+[00:35.16] Lonely is your love
+[00:37.85] I could be the answer to
+[00:41.03] All of your prayers
+[00:44.65] Take me dancing
+[00:46.94] Lonely ain't enough
+[00:49.50] I could be the answer to
+[00:52.66] All of your prayers
+[00:56.37] Take me dancing
+[00:59.21] Sing to Emily, make her laugh and talk her accent
+[01:05.58] See the colour in her eyes
+[01:11.06] Then you'll take her palm and joke about a life together
+[01:17.11] Lying, smoking on the ground
+[01:21.43] And as I fall into the bottle bank (broken glass)
+[01:27.61] You can make me into anything
+[01:30.67] As long and I'm reflecting you
+[01:33.79] Lonely is your love
+[01:36.49] I could be the answer to
+[01:39.49] All of your prayers
+[01:43.22] Take me dancing
+[01:45.33] Lonely ain't enough
+[01:48.18] I could be the answer to
+[01:51.15] All of your prayers
+[01:54.84] Take me dancing
+[01:57.20] Every moment (every moment)
+[02:03.19] Always like this (always like this)
+[02:08.52] We've got our come ups
+[02:11.48] (We've got our come ups)
+[02:14.06] And your dirty mind
+[02:20.62] Lonely is your love
+[02:23.21] I could be the answer to
+[02:26.22] All of your prayers
+[02:30.20] Take me dancing
+[02:32.27] Lonely ain't enough
+[02:35.16] I could be the answer to
+[02:38.14] All of your prayers
+[02:41.62] Take me dancing
+[02:43.85] We could walk to the shitty bars and
+[02:46.80] We could swing to Americana
+[02:49.88] I don't have much, don't make a difference, just
+[02:53.56] Take me dancing
+[02:55.78] We could walk to the shitty bars and
+[02:58.64] We could swing to Americana
+[03:01.38] I don't have much, don't make a difference, just
+[03:05.12] Take me dancing`,
         images: [
-        { src: "assets/images/angel/img_000.jpg", prompt: "It doesn't hurt me aesthetic" },
-        { src: "assets/images/angel/img_001.jpg", prompt: "Do you wanna feel how it feels aesthetic" },
-        { src: "assets/images/angel/img_002.jpg", prompt: "Do you want to know, know that aesthetic" },
-        { src: "assets/images/angel/img_003.jpg", prompt: "Do you wanna hear about the de aesthetic" },
-        { src: "assets/images/angel/img_004.jpg", prompt: "You aesthetic" },
-        { src: "assets/images/angel/img_005.jpg", prompt: "It's you and me aesthetic" },
-        { src: "assets/images/angel/img_006.jpg", prompt: "And if I only could aesthetic" },
-        { src: "assets/images/angel/img_007.jpg", prompt: "I'd make a deal with God aesthetic" },
-        { src: "assets/images/angel/img_008.jpg", prompt: "And I'd get Him to swap our pl aesthetic" },
-        { src: "assets/images/angel/img_009.jpg", prompt: "Be running up that road aesthetic" },
-        { src: "assets/images/angel/img_010.jpg", prompt: "Be running up that hill aesthetic" },
-        { src: "assets/images/angel/img_011.jpg", prompt: "Be running up that building aesthetic" },
-        { src: "assets/images/angel/img_012.jpg", prompt: "Say if I only could, oh aesthetic" },
-        { src: "assets/images/angel/img_013.jpg", prompt: "You don't wanna hurt me aesthetic" },
-        { src: "assets/images/angel/img_014.jpg", prompt: "But see how deep the bullet li aesthetic" },
-        { src: "assets/images/angel/img_015.jpg", prompt: "Unaware I'm tearing you asunder" },
-        { src: "assets/images/angel/img_016.jpg", prompt: "there is thunder in our hearts" },
-        { src: "assets/images/angel/img_017.jpg", prompt: "Is there so much hate for the ones we love" },
-        { src: "assets/images/angel/img_018.jpg", prompt: "tell me we both matter don't we" },
-        { src: "assets/images/angel/img_019.jpg", prompt: "You" },
-        { src: "assets/images/angel/img_020.jpg", prompt: "It's you and me" },
-        { src: "assets/images/angel/img_021.jpg", prompt: "It's you and me won't be unhappy" },
-        { src: "assets/images/angel/img_022.jpg", prompt: "And if I only could" },
-        { src: "assets/images/angel/img_023.jpg", prompt: "I'd make a deal with God" },
-        { src: "assets/images/angel/img_024.jpg", prompt: "And I'd get Him to swap our places" },
-        { src: "assets/images/angel/img_025.jpg", prompt: "Be running up that road" },
-        { src: "assets/images/angel/img_026.jpg", prompt: "Be running up that hill" },
-        { src: "assets/images/angel/img_027.jpg", prompt: "Be running up that building" },
-        { src: "assets/images/angel/img_028.jpg", prompt: "Say if I only could" },
-        { src: "assets/images/angel/img_029.jpg", prompt: "You" },
-        { src: "assets/images/angel/img_030.jpg", prompt: "It's you and me aesthetic" },
-        { src: "assets/images/angel/img_031.jpg", prompt: "It's you and me won't be unhap aesthetic" },
-        { src: "assets/images/angel/img_032.jpg", prompt: "C'mon baby, c'mon darlin' aesthetic" },
-        { src: "assets/images/angel/img_033.jpg", prompt: "Let me steal this moment from  aesthetic" },
-        { src: "assets/images/angel/img_034.jpg", prompt: "Come on angel, c'mon, c'mon da aesthetic" },
-        { src: "assets/images/angel/img_035.jpg", prompt: "Let's exchange the experience, aesthetic" },
-        { src: "assets/images/angel/img_036.jpg", prompt: "And if I only could aesthetic" },
-        { src: "assets/images/angel/img_037.jpg", prompt: "I'd make a deal with God aesthetic" },
-        { src: "assets/images/angel/img_038.jpg", prompt: "And I'd get Him to swap our pl aesthetic" },
-        { src: "assets/images/angel/img_039.jpg", prompt: "I'd be running up that road aesthetic" },
-        { src: "assets/images/angel/img_040.jpg", prompt: "Be running up that hill aesthetic" },
-        { src: "assets/images/angel/img_041.jpg", prompt: "With no problem aesthetic" },
-        { src: "assets/images/angel/img_042.jpg", prompt: "Say if I only could aesthetic" },
-        { src: "assets/images/angel/img_043.jpg", prompt: "I'd make a deal with God aesthetic" },
-        { src: "assets/images/angel/img_044.jpg", prompt: "And I'd get Him to swap our pl aesthetic" },
-        { src: "assets/images/angel/img_045.jpg", prompt: "be running up that road be running up that hill" },
-        { src: "assets/images/angel/img_046.jpg", prompt: "with no problem" },
-        { src: "assets/images/angel/img_047.jpg", prompt: "say if i only could" },
-        { src: "assets/images/angel/img_048.jpg", prompt: "i'd make a deal with god" },
-        { src: "assets/images/angel/img_049.jpg", prompt: "and i'd get him to swap our places" },
-        { src: "assets/images/angel/img_050.jpg", prompt: "i'd be running up that road" },
-        { src: "assets/images/angel/img_051.jpg", prompt: "be running up that hill" },
-        { src: "assets/images/angel/img_052.jpg", prompt: "with no problem" },
-        { src: "assets/images/angel/img_053.jpg", prompt: "say if i only could" },
-        { src: "assets/images/angel/img_054.jpg", prompt: "be running up that hill" },
-        { src: "assets/images/angel/img_055.jpg", prompt: "with no problem" },
-        { src: "assets/images/angel/img_056.jpg", prompt: "if i only could i'd be running out that hill" },
-        { src: "assets/images/angel/img_057.jpg", prompt: "if i only could i'd be running out that hill" }
-    ],
-        videoSrc: "assets/videos/angel.mp4?v=1"
+            { src: "assets/images/take_me_dancing/img_000.jpg", prompt: "Here's to Julian, a man among " },
+            { src: "assets/images/take_me_dancing/img_001.jpg", prompt: "Turned his back upon it all" },
+            { src: "assets/images/take_me_dancing/img_002.jpg", prompt: "Raise another glass then smash" },
+            { src: "assets/images/take_me_dancing/img_003.jpg", prompt: "Walking barefoot on the ground" },
+            { src: "assets/images/take_me_dancing/img_004.jpg", prompt: "And as I fall into the bottle " },
+            { src: "assets/images/take_me_dancing/img_005.jpg", prompt: "You can make me into anything" },
+            { src: "assets/images/take_me_dancing/img_006.jpg", prompt: "As long as I'm reflecting you" },
+            { src: "assets/images/take_me_dancing/img_007.jpg", prompt: "Lonely is your love" },
+            { src: "assets/images/take_me_dancing/img_008.jpg", prompt: "I could be the answer to" },
+            { src: "assets/images/take_me_dancing/img_009.jpg", prompt: "All of your prayers" },
+            { src: "assets/images/take_me_dancing/img_010.jpg", prompt: "Take me dancing" },
+            { src: "assets/images/take_me_dancing/img_011.jpg", prompt: "Lonely ain't enough" },
+            { src: "assets/images/take_me_dancing/img_012.jpg", prompt: "I could be the answer to" },
+            { src: "assets/images/take_me_dancing/img_013.jpg", prompt: "All of your prayers" },
+            { src: "assets/images/take_me_dancing/img_014.jpg", prompt: "Take me dancing" },
+            { src: "assets/images/take_me_dancing/img_015.jpg", prompt: "Sing to Emily, make her laugh " },
+            { src: "assets/images/take_me_dancing/img_016.jpg", prompt: "See the colour in her eyes" },
+            { src: "assets/images/take_me_dancing/img_017.jpg", prompt: "Then you'll take her palm and " },
+            { src: "assets/images/take_me_dancing/img_018.jpg", prompt: "Lying, smoking on the ground" },
+            { src: "assets/images/take_me_dancing/img_019.jpg", prompt: "And as I fall into the bottle " },
+            { src: "assets/images/take_me_dancing/img_020.jpg", prompt: "You can make me into anything" },
+            { src: "assets/images/take_me_dancing/img_021.jpg", prompt: "As long and I'm reflecting you" },
+            { src: "assets/images/take_me_dancing/img_022.jpg", prompt: "Lonely is your love" },
+            { src: "assets/images/take_me_dancing/img_023.jpg", prompt: "I could be the answer to" },
+            { src: "assets/images/take_me_dancing/img_024.jpg", prompt: "All of your prayers" },
+            { src: "assets/images/take_me_dancing/img_025.jpg", prompt: "Take me dancing" },
+            { src: "assets/images/take_me_dancing/img_026.jpg", prompt: "Lonely ain't enough" },
+            { src: "assets/images/take_me_dancing/img_027.jpg", prompt: "I could be the answer to" },
+            { src: "assets/images/take_me_dancing/img_028.jpg", prompt: "All of your prayers" },
+            { src: "assets/images/take_me_dancing/img_029.jpg", prompt: "Take me dancing" },
+            { src: "assets/images/take_me_dancing/img_030.jpg", prompt: "Every moment (every moment)" },
+            { src: "assets/images/take_me_dancing/img_031.jpg", prompt: "Always like this (always like " },
+            { src: "assets/images/take_me_dancing/img_032.jpg", prompt: "We've got our come ups" },
+            { src: "assets/images/take_me_dancing/img_033.jpg", prompt: "(We've got our come ups)" },
+            { src: "assets/images/take_me_dancing/img_034.jpg", prompt: "And your dirty mind" },
+            { src: "assets/images/take_me_dancing/img_035.jpg", prompt: "Lonely is your love" },
+            { src: "assets/images/take_me_dancing/img_036.jpg", prompt: "I could be the answer to" },
+            { src: "assets/images/take_me_dancing/img_037.jpg", prompt: "All of your prayers" },
+            { src: "assets/images/take_me_dancing/img_038.jpg", prompt: "Take me dancing" },
+            { src: "assets/images/take_me_dancing/img_039.jpg", prompt: "Lonely ain't enough" },
+            { src: "assets/images/take_me_dancing/img_040.jpg", prompt: "I could be the answer to" },
+            { src: "assets/images/take_me_dancing/img_041.jpg", prompt: "All of your prayers" },
+            { src: "assets/images/take_me_dancing/img_042.jpg", prompt: "Take me dancing" },
+            { src: "assets/images/take_me_dancing/img_043.jpg", prompt: "We could walk to the shitty ba" },
+            { src: "assets/images/take_me_dancing/img_044.jpg", prompt: "We could swing to Americana" },
+            { src: "assets/images/take_me_dancing/img_045.jpg", prompt: "I don't have much, don't make " },
+            { src: "assets/images/take_me_dancing/img_046.jpg", prompt: "Take me dancing" },
+            { src: "assets/images/take_me_dancing/img_047.jpg", prompt: "We could walk to the shitty ba" },
+            { src: "assets/images/take_me_dancing/img_048.jpg", prompt: "We could swing to Americana" },
+            { src: "assets/images/take_me_dancing/img_049.jpg", prompt: "I don't have much, don't make " },
+            { src: "assets/images/take_me_dancing/img_050.jpg", prompt: "Take me dancing" }
+        ],
+        videoSrc: "assets/videos/take_me_dancing.mp4?v=20"
     },
-    rorschach: {
-        metadata: {"artist": "The Ridleys", "title": "Rorschach Blots", "album": "Until I Reach The Sun Vol. 2", "year": 2021},
-        lyrics: `[00:15.86] Give me time and I will learn the art
-[00:22.28] Of choosing my mind over my heart
-[00:28.33] Staring at the shadows all alone
-[00:34.82] Driven by the longing to go home
-[00:40.83] 'Cause honestly
-[00:44.09] It feels so safe around you
-[00:49.94] It's unsettling
-[00:52.71] She don't know what it means but it doesn't matter
-[00:56.12] The fact is I can't forget her
-[00:59.74] All these Rorschach blots, bottles of scotch
-[01:02.49] Are driving me insane
-[01:06.77] In every single circumstance
-[01:09.46] We keep things in a way that makes more sense
-[01:12.40] All these Rorschach blots, bottles of scotch
-[01:15.43] Are messing with my brain
-[01:32.47] Build a wooden boat to sail away
-[01:38.37] All the sins that haunt you everyday
-[01:45.15] As we drift there's nothing left to save
-[01:51.03] 'Cause starlit ocean, you will be my grave
-[01:57.65] And honestly
-[02:00.55] It feels so safe around you
-[02:06.41] It's unsettling
-[02:09.97] I don't know what it means but it doesn't matter
-[02:13.28] The fact is I can't forget her
-[02:16.61] All these Rorschach blots, bottles of scotch
-[02:19.39] Are driving me insane
-[02:23.36] In every single circumstance
-[02:26.21] We keep things in a way that makes more sense
-[02:29.73] All these Rorschach blots, bottles of scotch
-[02:32.11] Are messing with my brain
-[02:35.07] She don't know what it means but it doesn't matter
-[02:38.80] The fact is I can't forget her
-[02:42.50] All these Rorschach blots, bottles of scotch
-[02:45.09] Are driving me insane
-[02:49.32] In every single circumstance
-[02:51.74] We keep things in a way that makes more sense
-[02:54.98] All these Rorschach blots, bottles of scotch
-[02:57.76] Are messing with my brain
-[03:14.64] In every single circumstance
-[03:17.50] We keep things in a way that makes more sense
-[03:26.89] In every single circumstance
-[03:30.03] We keep things in a way that makes more sense
-[03:33.18] All these Rorschach blots, bottles of scotch
-[03:36.05] Are messing with me`,
+    jane: {
+        metadata: {"artist": "The Long Faces", "title": "Jane!", "album": "Jane!", "year": 2023},
+        lyrics: `[00:01.49] Won't the devil guide your hand for good luck
+[00:05.92] To hold the honeysuckle rose as she lies down
+[00:12.74] Reading the paper, reading the world right round
+[00:16.96] And her eyes record the sweet surprise of those who died that day
+[00:25.87] Leaving her breathless, leading her hand to the grave
+[00:41.87] And Jane, you're early
+[00:45.35] Your life's work is dirtied by the fools who adore you
+[00:52.16] Only to find, only to find you out
+[00:56.66] They saw you dressing in the backroom
+[01:00.96] Now they'll pay what they owe you
+[01:05.13] It's only small change, red on the green green grass
+[01:13.64] Won't the devil take you back for more
+[01:18.25] To open closed doors and keep the good from the great
+[01:25.06] Evil in equal, seeking to kill and create
+[01:29.31] How grand
+[01:31.41] The milk and honey land is on her tongue again
+[01:38.20] Taste of the violence, trying to silence her head
+[01:54.18] And Jane, you're early
+[01:57.64] Your life's work is dirtied by the fools who adore you
+[02:04.47] Biding your time, biding your time to strike, surely
+[02:10.82] The poison makes a portrait of your face in the mirror
+[02:17.59] Smiling with fright
+[02:20.90] Ah!
+[02:33.67] And Jane, you're early
+[02:37.15] Your life's work is dirtied by the fools who adore you
+[02:43.91] Only to find, only to find you out
+[02:48.42] They saw you dressing in the backroom
+[02:52.79] Now they'll pay what they owe you
+[02:56.88] It's only small change, red on the green green grass`,
         images: [
-        { src: "assets/images/rorschach/img_000.jpg", prompt: "Give me time and I will learn  aesthetic" },
-        { src: "assets/images/rorschach/img_001.jpg", prompt: "Of choosing my mind over my he aesthetic" },
-        { src: "assets/images/rorschach/img_002.jpg", prompt: "Staring at the shadows all alo aesthetic" },
-        { src: "assets/images/rorschach/img_003.jpg", prompt: "Driven by the longing to go ho aesthetic" },
-        { src: "assets/images/rorschach/img_004.jpg", prompt: "'Cause honestly aesthetic" },
-        { src: "assets/images/rorschach/img_005.jpg", prompt: "It feels so safe around you aesthetic" },
-        { src: "assets/images/rorschach/img_006.jpg", prompt: "It's unsettling aesthetic" },
-        { src: "assets/images/rorschach/img_007.jpg", prompt: "She don't know what it means b aesthetic" },
-        { src: "assets/images/rorschach/img_008.jpg", prompt: "The fact is I can't forget her aesthetic" },
-        { src: "assets/images/rorschach/img_009.jpg", prompt: "All these Rorschach blots, bot aesthetic" },
-        { src: "assets/images/rorschach/img_010.jpg", prompt: "Are driving me insane aesthetic" },
-        { src: "assets/images/rorschach/img_011.jpg", prompt: "In every single circumstance aesthetic" },
-        { src: "assets/images/rorschach/img_012.jpg", prompt: "We keep things in a way that m aesthetic" },
-        { src: "assets/images/rorschach/img_013.jpg", prompt: "All these Rorschach blots, bot aesthetic" },
-        { src: "assets/images/rorschach/img_014.jpg", prompt: "Are messing with my brain aesthetic" },
-        { src: "assets/images/rorschach/img_015.jpg", prompt: "build a wooden boat to sail away" },
-        { src: "assets/images/rorschach/img_016.jpg", prompt: "all the sins that haunt you everyday" },
-        { src: "assets/images/rorschach/img_017.jpg", prompt: "as we drift theres nothing left to save" },
-        { src: "assets/images/rorschach/img_018.jpg", prompt: "cause starlit ocean you will be my grave" },
-        { src: "assets/images/rorschach/img_019.jpg", prompt: "and honestly" },
-        { src: "assets/images/rorschach/img_020.jpg", prompt: "it feels so safe around you" },
-        { src: "assets/images/rorschach/img_021.jpg", prompt: "its unsettling" },
-        { src: "assets/images/rorschach/img_022.jpg", prompt: "i dont know what it means but it doesnt matter" },
-        { src: "assets/images/rorschach/img_023.jpg", prompt: "the fact is i cant forget her" },
-        { src: "assets/images/rorschach/img_024.jpg", prompt: "all these rorschach blots bottles of scotch" },
-        { src: "assets/images/rorschach/img_025.jpg", prompt: "are driving me insane" },
-        { src: "assets/images/rorschach/img_026.jpg", prompt: "in every single circumstance" },
-        { src: "assets/images/rorschach/img_027.jpg", prompt: "we keep things in a way that makes more sense" },
-        { src: "assets/images/rorschach/img_028.jpg", prompt: "all these rorschach blots bottles of scotch" },
-        { src: "assets/images/rorschach/img_029.jpg", prompt: "are messing with my brain" },
-        { src: "assets/images/rorschach/img_030.jpg", prompt: "She don't know what it means b aesthetic" },
-        { src: "assets/images/rorschach/img_031.jpg", prompt: "The fact is I can't forget her aesthetic" },
-        { src: "assets/images/rorschach/img_032.jpg", prompt: "All these Rorschach blots, bot aesthetic" },
-        { src: "assets/images/rorschach/img_033.jpg", prompt: "Are driving me insane aesthetic" },
-        { src: "assets/images/rorschach/img_034.jpg", prompt: "In every single circumstance aesthetic" },
-        { src: "assets/images/rorschach/img_035.jpg", prompt: "We keep things in a way that m aesthetic" },
-        { src: "assets/images/rorschach/img_036.jpg", prompt: "All these Rorschach blots, bot aesthetic" },
-        { src: "assets/images/rorschach/img_037.jpg", prompt: "Are messing with my brain aesthetic" },
-        { src: "assets/images/rorschach/img_038.jpg", prompt: "In every single circumstance aesthetic" },
-        { src: "assets/images/rorschach/img_039.jpg", prompt: "We keep things in a way that m aesthetic" },
-        { src: "assets/images/rorschach/img_040.jpg", prompt: "In every single circumstance aesthetic" },
-        { src: "assets/images/rorschach/img_041.jpg", prompt: "We keep things in a way that m aesthetic" },
-        { src: "assets/images/rorschach/img_042.jpg", prompt: "All these Rorschach blots, bot aesthetic" },
-        { src: "assets/images/rorschach/img_043.jpg", prompt: "Are messing with me aesthetic" }
-    ],
-        videoSrc: "assets/videos/rorschach.mp4?v=2"
+            { src: "assets/images/jane/img_000.jpg", prompt: "Won't the devil guide your han" },
+            { src: "assets/images/jane/img_001.jpg", prompt: "To hold the honeysuckle rose a" },
+            { src: "assets/images/jane/img_002.jpg", prompt: "Reading the paper, reading the" },
+            { src: "assets/images/jane/img_003.jpg", prompt: "And her eyes record the sweet " },
+            { src: "assets/images/jane/img_004.jpg", prompt: "Leaving her breathless, leadin" },
+            { src: "assets/images/jane/img_005.jpg", prompt: "And Jane, you're early" },
+            { src: "assets/images/jane/img_006.jpg", prompt: "Your life's work is dirtied by" },
+            { src: "assets/images/jane/img_007.jpg", prompt: "Only to find, only to find you" },
+            { src: "assets/images/jane/img_008.jpg", prompt: "They saw you dressing in the b" },
+            { src: "assets/images/jane/img_009.jpg", prompt: "Now they'll pay what they owe " },
+            { src: "assets/images/jane/img_010.jpg", prompt: "It's only small change, red on" },
+            { src: "assets/images/jane/img_011.jpg", prompt: "Won't the devil take you back " },
+            { src: "assets/images/jane/img_012.jpg", prompt: "To open closed doors and keep " },
+            { src: "assets/images/jane/img_013.jpg", prompt: "Evil in equal, seeking to kill" },
+            { src: "assets/images/jane/img_014.jpg", prompt: "How grand" },
+            { src: "assets/images/jane/img_015.jpg", prompt: "The milk and honey land is on " },
+            { src: "assets/images/jane/img_016.jpg", prompt: "Taste of the violence, trying " },
+            { src: "assets/images/jane/img_017.jpg", prompt: "And Jane, you're early" },
+            { src: "assets/images/jane/img_018.jpg", prompt: "Your life's work is dirtied by" },
+            { src: "assets/images/jane/img_019.jpg", prompt: "Biding your time, biding your " },
+            { src: "assets/images/jane/img_020.jpg", prompt: "The poison makes a portrait of" },
+            { src: "assets/images/jane/img_021.jpg", prompt: "Smiling with fright" },
+            { src: "assets/images/jane/img_022.jpg", prompt: "Ah!" },
+            { src: "assets/images/jane/img_023.jpg", prompt: "And Jane, you're early" },
+            { src: "assets/images/jane/img_024.jpg", prompt: "Your life's work is dirtied by" },
+            { src: "assets/images/jane/img_025.jpg", prompt: "Only to find, only to find you" },
+            { src: "assets/images/jane/img_026.jpg", prompt: "They saw you dressing in the b" },
+            { src: "assets/images/jane/img_027.jpg", prompt: "Now they'll pay what they owe " },
+            { src: "assets/images/jane/img_028.jpg", prompt: "It's only small change, red on" }
+        ],
+        videoSrc: "assets/videos/jane.mp4?v=20"
+    },
+    kalapastangan: {
+        metadata: {"artist": "fitterkarma", "title": "Kalapastangan", "album": "Kalapastangan", "year": 2023},
+        lyrics: `[00:05.16] Oras nang sambahin ang ngalan Mo
+[00:14.99] 
+[00:17.00] Para mabuhay habang-buhay sa puso't isipan Mo
+[00:26.97] 
+[00:31.50] Sino ba ako para mapansin Mo?
+[00:42.50] Mga dalangin ko sa 'Yo, sana'y pakinggan Mo
+[00:49.11] 
+[01:04.71] Pa'no ba ako magiging 'sang santo
+[01:12.96] 
+[01:16.38] Para makasama Kita diyan sa tabi ng trono Mo?
+[01:24.73] 
+[01:28.50] Ilan pang pagsubok ang daraanan ko
+[01:36.53] 
+[01:40.05] Bago ako makaranas ng mga milagro Mo?
+[01:48.41] 
+[02:09.95] Oh, ang langit ay nandito lamang pala sa lupa
+[02:18.15] At ang impiyerno ay nasa isipan ko, at pinalimot ng 'Yong ganda
+[02:27.87] Umaawit ang mga anghel, umaawit ang mga anghel
+[02:37.17] Nagdiriwang sila nang makasama Kita, huwag Ka sanang mawawala
+[02:45.64] Oh, oh, oh, oh
+[02:52.07] Oh, ooh
+[03:03.27] Mamamatay akong nakangiti
+[03:07.58] Kapag Ikaw ang nasa aking tabi
+[03:11.93] Mabubuhay akong nagsisisi
+[03:16.33] Kapag 'sang araw hindi Kita mapangiti
+[03:20.78] Kalapastangan ang 'di Ka ibigin
+[03:25.36] Kalokohan ang 'di Ka isipin
+[03:29.72] Kung ang mundo ay biglang gugunawin
+[03:34.17] Ikaw ang una kong hahanapin
+[03:39.02] Ooh
+[03:45.63] 
+[03:48.76] Ooh
+[03:52.50] `,
+        images: [
+            { src: "assets/images/kalapastangan/img_000.jpg", prompt: "Oras nang sambahin ang ngalan Mo" },
+            { src: "assets/images/kalapastangan/img_001.jpg", prompt: "[Instrumental Interlude]" },
+            { src: "assets/images/kalapastangan/img_002.jpg", prompt: "Para mabuhay habang-buhay sa puso't isipan Mo" },
+            { src: "assets/images/kalapastangan/img_003.jpg", prompt: "[Instrumental Interlude]" },
+            { src: "assets/images/kalapastangan/img_004.jpg", prompt: "Sino ba ako para mapansin Mo?" },
+            { src: "assets/images/kalapastangan/img_005.jpg", prompt: "Mga dalangin ko sa 'Yo, sana'y pakinggan Mo" },
+            { src: "assets/images/kalapastangan/img_006.jpg", prompt: "[Instrumental Guitar Solo]" },
+            { src: "assets/images/kalapastangan/img_007.jpg", prompt: "Pa'no ba ako magiging 'sang santo" },
+            { src: "assets/images/kalapastangan/img_008.jpg", prompt: "[Instrumental Break]" },
+            { src: "assets/images/kalapastangan/img_009.jpg", prompt: "Para makasama Kita diyan sa tabi ng trono Mo?" },
+            { src: "assets/images/kalapastangan/img_010.jpg", prompt: "[Instrumental Break]" },
+            { src: "assets/images/kalapastangan/img_011.jpg", prompt: "Ilan pang pagsubok ang daraanan ko" },
+            { src: "assets/images/kalapastangan/img_012.jpg", prompt: "[Instrumental Interlude]" },
+            { src: "assets/images/kalapastangan/img_013.jpg", prompt: "Bago ako makaranas ng mga milagro Mo?" },
+            { src: "assets/images/kalapastangan/img_014.jpg", prompt: "[Instrumental Guitar Solo]" },
+            { src: "assets/images/kalapastangan/img_015.jpg", prompt: "Oh, ang langit ay nandito lamang pala sa lupa" },
+            { src: "assets/images/kalapastangan/img_016.jpg", prompt: "At ang impiyerno ay nasa isipan ko, at pinalimot ng 'Yong ganda" },
+            { src: "assets/images/kalapastangan/img_017.jpg", prompt: "Umaawit ang mga anghel, umaawit ang mga anghel" },
+            { src: "assets/images/kalapastangan/img_018.jpg", prompt: "Nagdiriwang sila nang makasama Kita, huwag Ka sanang mawawala" },
+            { src: "assets/images/kalapastangan/img_019.jpg", prompt: "Oh, oh, oh, oh" },
+            { src: "assets/images/kalapastangan/img_020.jpg", prompt: "Oh, ooh" },
+            { src: "assets/images/kalapastangan/img_021.jpg", prompt: "Mamamatay akong nakangiti" },
+            { src: "assets/images/kalapastangan/img_022.jpg", prompt: "Kapag Ikaw ang nasa aking tabi" },
+            { src: "assets/images/kalapastangan/img_023.jpg", prompt: "Mabubuhay akong nagsisisi" },
+            { src: "assets/images/kalapastangan/img_024.jpg", prompt: "Kapag 'sang araw hindi Kita mapangiti" },
+            { src: "assets/images/kalapastangan/img_025.jpg", prompt: "Kalapastangan ang 'di Ka ibigin" },
+            { src: "assets/images/kalapastangan/img_026.jpg", prompt: "Kalokohan ang 'di Ka isipin" },
+            { src: "assets/images/kalapastangan/img_027.jpg", prompt: "Kung ang mundo ay biglang gugunawin" },
+            { src: "assets/images/kalapastangan/img_028.jpg", prompt: "Ikaw ang una kong hahanapin" },
+            { src: "assets/images/kalapastangan/img_029.jpg", prompt: "Ooh" },
+            { src: "assets/images/kalapastangan/img_030.jpg", prompt: "[Instrumental Solo]" },
+            { src: "assets/images/kalapastangan/img_031.jpg", prompt: "Ooh" },
+            { src: "assets/images/kalapastangan/img_032.jpg", prompt: "[Instrumental Outro]" }
+        ],
+        videoSrc: "assets/videos/kalapastangan.mp4?v=20"
     }
 };
+
 function loadSong(songKey) {
     const data = songData[songKey];
     if (!data) return;
@@ -710,3 +650,4 @@ trackerNodes.forEach(node => {
         if (targetEl) targetEl.scrollIntoView({ behavior: "smooth" });
     });
 });
+

@@ -1,4 +1,5 @@
 from __future__ import annotations
+from langsmith import traceable
 
 import os
 import re
@@ -23,24 +24,33 @@ def parse_lrc(lrc_text: str) -> list[dict[str, Any]]:
         match = pattern.match(line.strip())
         if match:
             mins, secs, text = match.groups()
-            start_ms = int(int(mins) * 60000 + float(secs) * 1000)
-            parsed_lines.append({
-                "text": text.strip(),
-                "start_ms": start_ms
-            })
+            text_str = text.strip()
+            if text_str:  # Filter out empty text lines / empty instrumental markers
+                start_ms = int(int(mins) * 60000 + float(secs) * 1000)
+                parsed_lines.append({
+                    "text": text_str,
+                    "start_ms": start_ms
+                })
             
-    # Calculate end_ms based on the start_ms of the next line
+    # Calculate end_ms: cap dialogue display during long instrumental breaks (>4.5s)
+    # to avoid subtitles freezing across guitar solos / interludes.
     for i in range(len(parsed_lines)):
         if i < len(parsed_lines) - 1:
-            parsed_lines[i]["end_ms"] = parsed_lines[i + 1]["start_ms"]
+            next_start = parsed_lines[i + 1]["start_ms"]
+            gap = next_start - parsed_lines[i]["start_ms"]
+            if gap > 4500:
+                parsed_lines[i]["end_ms"] = parsed_lines[i]["start_ms"] + 4000
+            else:
+                parsed_lines[i]["end_ms"] = next_start
         else:
-            # For the last line, add 5 seconds
-            parsed_lines[i]["end_ms"] = parsed_lines[i]["start_ms"] + 5000
+            # For the last line, display for up to 4 seconds
+            parsed_lines[i]["end_ms"] = parsed_lines[i]["start_ms"] + 4000
             
     return parsed_lines
 
+@traceable
 async def fetch_synced_lyrics(artist: str, title: str) -> list[dict[str, Any]] | None:
-    """Fetch synced lyrics from LRCLIB.
+    """Fetch synced lyrics from LRCLIB with retries and timeout.
     
     Args:
         artist: Artist name
@@ -49,28 +59,32 @@ async def fetch_synced_lyrics(artist: str, title: str) -> list[dict[str, Any]] |
     Returns:
         List of dicts with text, start_ms, end_ms, or None if not found.
     """
-    try:
-        async with httpx.AsyncClient() as client:
-            res = await client.get(
-                "https://lrclib.net/api/search",
-                params={"q": f"{artist} {title}"},
-                timeout=10.0
-            )
-            res.raise_for_status()
-            results = res.json()
-            
-            if not results:
-                return None
-                
-            # Find the first result with synced lyrics
-            for track in results:
-                if track.get("syncedLyrics"):
-                    return parse_lrc(track["syncedLyrics"])
-                    
-            return None
-    except Exception:
-        return None
+    import asyncio
+    headers = {
+        "User-Agent": "YLine/0.1.0 (https://github.com/pjpangilinan/yline)"
+    }
+    for attempt in range(3):
+        try:
+            async with httpx.AsyncClient(headers=headers, timeout=15.0, follow_redirects=True) as client:
+                res = await client.get(
+                    "https://lrclib.net/api/search",
+                    params={"q": f"{artist} {title}"},
+                )
+                if res.status_code == 200:
+                    results = res.json()
+                    if results:
+                        for track in results:
+                            if track.get("syncedLyrics"):
+                                return parse_lrc(track["syncedLyrics"])
+                    return None
+                elif res.status_code == 429:
+                    await asyncio.sleep(2.0 * (attempt + 1))
+                    continue
+        except Exception:
+            await asyncio.sleep(1.0 * (attempt + 1))
+    return None
 
+@traceable
 def fetch_plain_lyrics(artist: str, title: str) -> str | None:
     """Fetch plain lyrics using lyricsgenius.
     

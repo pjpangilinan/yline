@@ -1,4 +1,5 @@
 from __future__ import annotations
+from langsmith import traceable
 
 import os
 import yt_dlp
@@ -7,6 +8,7 @@ import imageio_ffmpeg
 
 logger = logging.getLogger(__name__)
 
+@traceable
 async def download_audio(query: str, output_dir: str) -> str | None:
     """Download audio from YouTube using yt-dlp.
     
@@ -32,24 +34,23 @@ async def download_audio(query: str, output_dir: str) -> str | None:
         'extract_audio': True,
     }
     
-    try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            # Search YouTube (ytsearch). Appending 'topic' to the query usually fetches the studio audio
-            # which matches Spotify lyrics perfectly, instead of music videos with long intros.
-            info = ydl.extract_info(f"ytsearch1:{query} topic", download=True)
-            if not info or 'entries' not in info or not info['entries']:
-                return None
+    search_queries = [f"{query} topic", f"{query} audio", query]
+    for sq in search_queries:
+        try:
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info = ydl.extract_info(f"ytsearch1:{sq}", download=True)
+                if not info or 'entries' not in info or not info['entries']:
+                    continue
+                    
+                entry = info['entries'][0]
+                expected_path = ydl.prepare_filename(entry).rsplit('.', 1)[0] + '.mp3'
                 
-            entry = info['entries'][0]
-            # yt-dlp replaces extension in outtmpl during post-processing
-            expected_path = ydl.prepare_filename(entry).rsplit('.', 1)[0] + '.mp3'
-            
-            if os.path.exists(expected_path):
-                return expected_path
-            return None
-    except Exception as e:
-        logger.error(f"Error downloading audio: {e}")
-        return None
+                if os.path.exists(expected_path):
+                    return expected_path
+        except Exception as e:
+            logger.warning(f"Audio download attempt for '{sq}' failed: {e}")
+            continue
+    return None
 
 DOWNLOAD_AUDIO_TOOL = {
     "type": "function",

@@ -1,10 +1,11 @@
-﻿# Python-generated files
+# Python-generated files
 __pycache__/
 *.py[oc]
 build/
 dist/
 wheels/
 *.egg-info
+.pytest_cache/
 
 # Virtual environments
 .venv
@@ -14,9 +15,17 @@ venv/
 # Environment variables (secrets)
 .env
 
-# Generated output
+# Binaries & executables
+*.exe
+ffmpeg.exe
+
+# Generated output & scratch files
 output/
 scratch/
+archive/
+aligned_*.json
+kala_whisper_*.json
+lrc_*.json
 *.mp4
 *.mp3
 *.wav
@@ -38,3 +47,4 @@ IMPLEMENTATION.md
 # OS files
 .DS_Store
 Thumbs.db
+

@@ -1,10 +1,32 @@
-﻿# YLine — Multi-Agent Lyric Video Pipeline
+# YLine — Multi-Agent Lyric Video Pipeline
 
-YLine is a fully autonomous LangGraph pipeline that leverages a multi-agent AI architecture to dynamically generate perfectly synced, aesthetic lyric videos from a simple song query.
+[![Live Showcase](https://img.shields.io/badge/GitHub%20Pages-Live%20Showcase-dc143c?style=flat-square&logo=github)](https://pjpangilinan.github.io/yline/)
+[![Python 3.12](https://img.shields.io/badge/python-3.12+-blue.svg?style=flat-square&logo=python)](https://www.python.org/)
+[![Built with LangGraph](https://img.shields.io/badge/LangGraph-Multi--Agent-orange.svg?style=flat-square)](https://langchain-ai.github.io/langgraph/)
+[![Fast Dependency Manager](https://img.shields.io/badge/uv-Astral-purple.svg?style=flat-square)](https://github.com/astral-sh/uv)
+
+**YLine** is a fully autonomous LangGraph pipeline that coordinates specialized AI agents to dynamically generate perfectly synchronized, aesthetic lyric videos from a simple song query.
+
+---
+
+## 🌐 Live Showcase
+
+Experience the interactive scrollytelling showcase running on GitHub Pages:
+
+👉 **[https://pjpangilinan.github.io/yline/](https://pjpangilinan.github.io/yline/)**
+
+Explore every stage of the multi-agent pipeline (Metadata Resolution, Lyric Syncing, Mood-Matched Image Scraping, and Video Assembly) across 5 full tracks:
+- **Lotus Juice** — *Color Your Night*
+- **Panic! at the Disco** — *London Beckoned Songs About Money Written by Machines*
+- **Will Joseph Cook** — *Take Me Dancing*
+- **The Long Faces** — *Jane!*
+- **fitterkarma** — *Kalapastangan*
+
+---
 
 ## 🚀 How It Works
 
-The pipeline is built on a conditional State Graph and uses Groq (LLMs) to reason through edge cases and orchestrate API tools.
+The pipeline is built on a conditional State Graph and uses Groq LLMs to orchestrate APIs, reason through edge cases, and handle fallbacks.
 
 ```mermaid
 flowchart TD
@@ -24,32 +46,49 @@ flowchart TD
 ```
 
 ### The Architecture
-1. **Song Resolver**: Takes a vague query (e.g. "Color Your Night") and perfectly resolves it to its official artist, title, album, and release year via the MusicBrainz API.
-2. **Lyrics Agent**: Fetches highly-accurate, human-verified synced `.lrc` files from LRCLIB. If the backend fails or returns unsynced text, it organically pivots to the Genius API, grabs the raw text, and streams it through a specialized LLM protocol to predict the timestamps mathematically.
-3. **Image Agent**: Reads the literal text of each lyric line and generates a highly specific, stylistic search query. It then synchronously scrapes DuckDuckGo for high-quality images that match the emotional tone of the lyric.
-4. **Audio Agent**: Wraps `yt-dlp` to securely fetch the highest-quality official audio stream for the resolved metadata.
-5. **Video Assembler**: Uses MoviePy to sequentially map the extracted images and text blocks directly onto the audio timeline, rendering a 1080p hardware-accelerated `.mp4`.
+1. **Song Resolver**: Takes a loose user query (e.g. *"Color Your Night"*) and resolves official artist, title, album, and release year via the MusicBrainz API.
+2. **Lyrics Agent**: Fetches highly accurate, human-verified synced `.lrc` files from LRCLIB with instrumental gap capping. If unavailable, it pivots to the Genius API and utilizes an LLM protocol to predict timestamps mathematically.
+3. **Image Agent**: Reads each lyric line to craft evocative, stylistic prompts, query DuckDuckGo Images, and enforce perceptual hash deduplication to guarantee unique, mood-appropriate imagery.
+4. **Audio Agent**: Leverages `yt-dlp` to securely fetch the highest-quality official audio stream for the resolved metadata.
+5. **Video Assembler**: Uses MoviePy to composite visual slides, synchronized ASS typography, and audio into 1080p hardware-accelerated `.mp4` video.
 
-## 💻 Interactive Showcase
+---
 
-To view the generated artifacts, launch the included static frontend server:
+## 💻 Local Showcase Server
+
+To view the showcase locally:
 
 ```bash
-uv run python -m RangeHTTPServer 8000
+# Serve the docs directory
+uv run python -m http.server 8080 -d docs
 ```
-Then visit `http://localhost:8000` to interact with the pipeline logs, raw JSON metadata, and final video outputs for 5 test tracks.
+Then visit `http://localhost:8080` in your browser.
 
-## 🛠 Setup
+---
 
-Ensure you have [uv](https://github.com/astral-sh/uv) installed, then run:
+## 🛠 Setup & CLI Usage
+
+Ensure you have [uv](https://github.com/astral-sh/uv) installed, then:
 
 ```bash
-# Sync dependencies
+# 1. Sync dependencies
 uv sync
 
-# Set your API keys in .env
+# 2. Configure environment variables
 cp .env.example .env
 
-# Run the pipeline
+# 3. Run the CLI pipeline
 uv run yline "Song Name by Artist"
 ```
+
+### Running Tests
+
+```bash
+uv run python -m unittest discover tests
+```
+
+---
+
+## 📄 License
+
+MIT

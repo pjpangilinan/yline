@@ -64,8 +64,9 @@ async def image_agent_node(state: PipelineState) -> dict[str, Any]:
     # Step 1: Generate search queries for all lyrics using LLM
     all_queries = await _generate_search_queries(lyrics, artist, title)
 
-    # Step 2: Download images for each query
+    # Step 2: Download unique images for each query
     images = []
+    seen_hashes: set[str] = set()
     for i, (lyric, query) in enumerate(zip(lyrics, all_queries)):
         logger.info(f"  [{i+1}/{len(lyrics)}] Searching: {query}")
 
@@ -79,15 +80,15 @@ async def image_agent_node(state: PipelineState) -> dict[str, Any]:
                 save_path = os.path.join(output_dir, f"img_{i:03d}.jpg")
                 for url in urls:
                     try:
-                        path = await download_image(url, save_path)
+                        path = await download_image(url, save_path, seen_hashes=seen_hashes)
                         if not path:
-                            raise ValueError("download_image returned None")
+                            raise ValueError("download_image returned None or duplicate")
                         images.append({
                             "path": path,
                             "lyric_index": i,
                             "search_query": query,
                         })
-                        break  # Got one valid image, break loop
+                        break  # Got one valid unique image, break loop
                     except Exception as e:
                         logger.warning(f"Failed to download {url}: {e}")
                         continue
