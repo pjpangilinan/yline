@@ -4,6 +4,7 @@ Takes song metadata and returns timestamped lyric lines for video assembly.
 """
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 from typing import Any
@@ -77,7 +78,8 @@ async def lyrics_agent_node(state: PipelineState) -> dict[str, Any]:
 
     # Step 2: Try Genius for plain lyrics
     try:
-        plain = fetch_plain_lyrics(artist, title)
+        loop = asyncio.get_running_loop()
+        plain = await loop.run_in_executor(None, fetch_plain_lyrics, artist, title)
         if plain:
             logger.info("Got plain lyrics from Genius, estimating timing")
             lyrics = _estimate_timing(plain)
@@ -90,7 +92,7 @@ async def lyrics_agent_node(state: PipelineState) -> dict[str, Any]:
 
     try:
         llm = ChatGroq(model="qwen/qwen3.8-27b", temperature=0, max_tokens=300)
-        response = llm.invoke([
+        response = await llm.ainvoke([
             SystemMessage(content="Suggest 2 alternative artist/title combinations to search for lyrics. Return JSON array of {artist, title} objects."),
             HumanMessage(content=f"Original: {artist} - {title}"),
         ])

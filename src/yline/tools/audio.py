@@ -1,6 +1,7 @@
 from __future__ import annotations
 from langsmith import traceable
 
+import asyncio
 import os
 import yt_dlp
 import logging
@@ -35,21 +36,36 @@ async def download_audio(query: str, output_dir: str) -> str | None:
     }
     
     search_queries = [f"{query} topic", f"{query} audio", query]
-    for sq in search_queries:
+    loop = asyncio.get_running_loop()
+
+    def _sync_download(sq: str) -> str | None:
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info = ydl.extract_info(f"ytsearch1:{sq}", download=True)
                 if not info or 'entries' not in info or not info['entries']:
-                    continue
+                    return None
                     
                 entry = info['entries'][0]
                 expected_path = ydl.prepare_filename(entry).rsplit('.', 1)[0] + '.mp3'
                 
                 if os.path.exists(expected_path):
                     return expected_path
+                
+                # Check for any newly created .mp3 in output_dir matching the query or latest timestamp
+                mp3_files = [
+                    os.path.join(output_dir, f) for f in os.listdir(output_dir) if f.lower().endswith(".mp3")
+                ]
+                if mp3_files:
+                    latest = max(mp3_files, key=os.path.getmtime)
+                    return latest
         except Exception as e:
             logger.warning(f"Audio download attempt for '{sq}' failed: {e}")
-            continue
+        return None
+
+    for sq in search_queries:
+        expected_path = await loop.run_in_executor(None, _sync_download, sq)
+        if expected_path:
+            return expected_path
     return None
 
 DOWNLOAD_AUDIO_TOOL = {

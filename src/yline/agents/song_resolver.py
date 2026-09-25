@@ -52,77 +52,6 @@ async def song_resolver_node(state: PipelineState) -> dict[str, Any]:
 
     logger.info(f"Resolving song query: {query}")
 
-    # Temporary bypass for Lord Huron to avoid MusicBrainz search bug and Groq rate limit
-    if "lord huron" in query.lower():
-        metadata = {
-            "artist": "Lord Huron",
-            "title": "The Night We Met",
-            "album": "Strange Trails",
-            "year": 2015,
-            "musicbrainz_id": "none"
-        }
-        return {"song_metadata": metadata}
-        
-    if "rivers in the desert" in query.lower():
-        metadata = {
-            "artist": "Lyn",
-            "title": "Rivers In the Desert",
-            "album": "Persona 5 OST",
-            "year": 2017,
-            "musicbrainz_id": "none"
-        }
-        return {"song_metadata": metadata}
-        
-    if "daiki" in query.lower() and "my color" in query.lower():
-        metadata = {
-            "artist": "DAIKI(AWSM.)",
-            "title": "My Color",
-            "album": "My Color",
-            "year": 2020,
-            "musicbrainz_id": "none"
-        }
-        return {"song_metadata": metadata}
-
-    if "to be hero x" in query.lower() or "brand new type of hero" in query.lower():
-        metadata = {
-            "artist": "Chatterbox",
-            "title": "New Type of Hero",
-            "album": "To Be Hero X",
-            "year": 2024,
-            "musicbrainz_id": "none"
-        }
-        return {"song_metadata": metadata}
-
-    if "yoshi's island" in query.lower() or "glass beach" in query.lower():
-        metadata = {
-            "artist": "glass beach",
-            "title": "yoshi's island",
-            "album": "the first glass beach album",
-            "year": 2019,
-            "musicbrainz_id": "none"
-        }
-        return {"song_metadata": metadata}
-
-    if "rorschach" in query.lower() or "ridleys" in query.lower():
-        metadata = {
-            "artist": "The Ridleys",
-            "title": "Rorschach Blots",
-            "album": "Until I Reach The Sun Vol. 2",
-            "year": 2021,
-            "musicbrainz_id": "none"
-        }
-        return {"song_metadata": metadata}
-
-    if "color your night" in query.lower():
-        metadata = {
-            "artist": "Lotus Juice",
-            "title": "Color Your Night",
-            "album": "Persona 3 Reload",
-            "year": 2024,
-            "musicbrainz_id": "none"
-        }
-        return {"song_metadata": metadata}
-
     llm = ChatGroq(
         model="qwen/qwen3.8-27b",
         temperature=0,
@@ -161,7 +90,7 @@ async def song_resolver_node(state: PipelineState) -> dict[str, Any]:
         await rate_limiter.acquire(estimated_tokens=300)
 
         try:
-            response = llm.invoke(messages, tools=tools)
+            response = await llm.ainvoke(messages, tools=tools)
         except Exception as e:
             logger.error(f"LLM call failed: {e}")
             errors.append(f"Song resolver LLM error: {e}")

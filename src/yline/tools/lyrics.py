@@ -103,8 +103,15 @@ def fetch_plain_lyrics(artist: str, title: str) -> str | None:
         genius = lyricsgenius.Genius(token)
         genius.verbose = False
         song = genius.search_song(title, artist)
-        if song:
-            return song.lyrics
+        if song and song.lyrics:
+            text = song.lyrics
+            # Strip Genius header lines e.g. "Song Name Lyrics"
+            text = re.sub(r'^.*?[Ll]yrics\s*\n', '', text)
+            # Strip section headers [Chorus], [Verse 1] etc.
+            text = re.sub(r'\[.*?\]', '', text)
+            # Strip trailing "123Embed" from Genius
+            text = re.sub(r'\d*Embed$', '', text).strip()
+            return text if text else None
     except Exception:
         return None
     return None

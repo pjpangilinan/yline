@@ -142,12 +142,15 @@ def build_graph() -> StateGraph:
     return graph.compile()
 
 
-async def run_pipeline(song_query: str, test_mode: bool = False) -> PipelineState:
+async def run_pipeline(
+    song_query: str, test_mode: bool = False, force: bool = False
+) -> PipelineState:
     """Run the full lyric video pipeline.
 
     Args:
         song_query: User's song query (can be vague)
         test_mode: Truncate processing to 15 seconds for rapid E2E testing
+        force: Ignore cached state and run all nodes from scratch
 
     Returns:
         Final pipeline state with video_path or errors
@@ -158,13 +161,18 @@ async def run_pipeline(song_query: str, test_mode: bool = False) -> PipelineStat
     state_file = f"output/{safe_query}_state.json"
     os.makedirs("output", exist_ok=True)
     
-    if os.path.exists(state_file):
+    if os.path.exists(state_file) and not force:
         with open(state_file, "r") as f:
             initial_state = json.load(f)
             # Ensure test_mode flag is updated even on cached loads
             initial_state["test_mode"] = test_mode
             logger.info(f"Loaded cached state from {state_file}")
     else:
+        if os.path.exists(state_file):
+            try:
+                os.remove(state_file)
+            except Exception:
+                pass
         initial_state = {
             "song_query": song_query,
             "test_mode": test_mode,

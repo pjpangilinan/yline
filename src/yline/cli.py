@@ -39,6 +39,11 @@ def main() -> None:
         action="store_true",
         help="Run in E2E test mode (truncates processing to 15 seconds)",
     )
+    parser.add_argument(
+        "--force", "-f",
+        action="store_true",
+        help="Force re-running all stages from scratch, ignoring cached state",
+    )
 
     args = parser.parse_args()
 
@@ -53,7 +58,7 @@ def main() -> None:
     # Run the pipeline
     from yline.graph import run_pipeline
 
-    result = asyncio.run(run_pipeline(args.query, test_mode=args.test))
+    result = asyncio.run(run_pipeline(args.query, test_mode=args.test, force=args.force))
 
     # Report results
     if result.get("video_path"):

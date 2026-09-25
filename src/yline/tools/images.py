@@ -3,12 +3,15 @@ from langsmith import traceable
 
 import asyncio
 import hashlib
+import html
 import io
 import json
 import logging
 import os
 import re
+import ssl
 from typing import Any
+import certifi
 import httpx
 from PIL import Image
 
@@ -105,10 +108,76 @@ async def _search_ddg(query: str, max_results: int = 15) -> list[str]:
     return []
 
 
+# Wikimedia SSL context using certifi bundle
+_ssl_context = ssl.create_default_context(cafile=certifi.where())
+
+# Titles/categories on Wikimedia that are unsuitable for lyric video backgrounds
+WIKIMEDIA_EXCLUDE_TERMS = [
+    "flag of", "coat of arms", "icon", "symbol", "map", "diagram", "chart",
+    "logo", "screenshot", "signature", "seal of", "currency", "coin"
+]
+
+
+@traceable
+async def _search_wikimedia(query: str, max_results: int = 15) -> list[str]:
+    """Search Wikimedia Commons for high-resolution, relevant public domain photos."""
+    for attempt in range(2):
+        try:
+            await _image_rate_limiter.wait()
+            params = {
+                "action": "query",
+                "generator": "search",
+                "gsrnamespace": "6",  # File namespace
+                "gsrsearch": query,
+                "gsrlimit": str(max_results + 5),
+                "prop": "imageinfo",
+                "iiprop": "url|size|mime",
+                "format": "json",
+            }
+            async with httpx.AsyncClient(
+                headers={"User-Agent": "YlineBot/1.0 (contact@yline.local)"},
+                verify=_ssl_context,
+                timeout=10.0,
+            ) as client:
+                res = await client.get("https://commons.wikimedia.org/w/api.php", params=params)
+                if res.status_code == 200:
+                    data = res.json()
+                    pages = data.get("query", {}).get("pages", {})
+                    results = []
+                    for _, v in pages.items():
+                        infos = v.get("imageinfo", [])
+                        if not infos:
+                            continue
+                        info = infos[0]
+                        mime = info.get("mime", "")
+                        if mime not in ["image/jpeg", "image/png", "image/webp"]:
+                            continue
+                        title = v.get("title", "").lower()
+                        if any(term in title for term in WIKIMEDIA_EXCLUDE_TERMS):
+                            continue
+                        w = info.get("width", 0)
+                        h = info.get("height", 0)
+                        if w < 500 or h < 400:
+                            continue
+                        url = info.get("url")
+                        if url and not is_stock_url(url):
+                            results.append(url)
+                    if results:
+                        return results[:max_results]
+        except Exception as e:
+            logger.debug(f"Wikimedia search attempt {attempt+1} failed: {e}")
+            await asyncio.sleep(1.0)
+    return []
+
+
 @traceable
 async def _search_bing(query: str, max_results: int = 15) -> list[str]:
-    """Fallback search using Bing Images with retries and timeouts."""
-    for attempt in range(3):
+    """Search Bing Images with metadata extraction and relevance validation."""
+    query_keywords = set(re.findall(r"[a-zA-Z]{3,}", query.lower())) - {
+        "aesthetic", "scene", "view", "photo", "image", "wallpaper", "picture"
+    }
+
+    for attempt in range(2):
         try:
             await _image_rate_limiter.wait()
             url = f"https://www.bing.com/images/search?q={query}&form=HDRSC2&first=1"
@@ -117,29 +186,77 @@ async def _search_bing(query: str, max_results: int = 15) -> list[str]:
             ) as client:
                 res = await client.get(url)
                 if res.status_code == 200:
-                    matches = [
-                        m for m in re.findall(r'murl&quot;:&quot;(http[^&]+)&quot;', res.text)
-                        if not is_stock_url(m)
-                    ]
-                    if matches:
-                        return matches[:max_results]
+                    # Parse image JSON blobs: m="{...}"
+                    raw_matches = re.findall(r'm="(\{[^"]+\})"', res.text)
+                    relevant_matches = []
+                    fallback_matches = []
+
+                    for m in raw_matches:
+                        try:
+                            d = json.loads(html.unescape(m))
+                            murl = d.get("murl")
+                            if not murl or is_stock_url(murl):
+                                continue
+                            
+                            title = d.get("t", "").lower()
+                            title_words = set(re.findall(r"[a-zA-Z]{3,}", title))
+                            overlap = query_keywords.intersection(title_words)
+                            if query_keywords and len(overlap) > 0:
+                                relevant_matches.append(murl)
+                            else:
+                                fallback_matches.append(murl)
+                        except Exception:
+                            continue
+
+                    # If we found matches with keyword overlap in the title, use them
+                    if len(relevant_matches) >= 2:
+                        return relevant_matches[:max_results]
+                    
+                    # Otherwise, if Bing had multiple matches, take top relevant + fallback
+                    combined = relevant_matches + fallback_matches
+                    if len(combined) >= 3:
+                        return combined[:max_results]
         except Exception as e:
             logger.debug(f"Bing search attempt {attempt+1} failed: {e}")
-            await asyncio.sleep(1.5 + attempt * 1.5)
+            await asyncio.sleep(1.2 + attempt * 1.0)
     return []
 
 
 @traceable
 async def search_images(query: str, max_results: int = 15) -> list[str]:
-    """Search DuckDuckGo (with Bing fallback) for images.
+    """Search across multiple providers with relevance fallback.
     
-    Includes rate limiting, retries, and realistic browser headers.
+    1. First tries Wikimedia Commons (high relevance, curated CC/public domain images).
+    2. Then tries Bing Images (with title keyword validation to avoid local filler).
+    3. If query fails, simplifies query words and retries.
     """
-    urls = await _search_ddg(query, max_results=max_results)
-    if not urls:
-        logger.info(f"DDG yielded 0 images for '{query}', falling back to Bing...")
-        urls = await _search_bing(query, max_results=max_results)
-    return urls
+    clean_q = " ".join(re.findall(r"[a-zA-Z0-9]+", query))
+    if not clean_q:
+        clean_q = query
+
+    # 1. Wikimedia Commons
+    urls = await _search_wikimedia(clean_q, max_results=max_results)
+    if urls:
+        return urls
+
+    # 2. Bing Images
+    urls = await _search_bing(clean_q, max_results=max_results)
+    if urls:
+        return urls
+
+    # 3. If query has >2 words and returned 0 results, simplify to top 2 keywords
+    words = [w for w in re.findall(r"[a-zA-Z]{3,}", clean_q) if w.lower() not in {"aesthetic", "scene", "view"}]
+    if len(words) > 2:
+        simplified = " ".join(words[:2])
+        logger.info(f"Retrying image search with simplified query '{simplified}' (was '{clean_q}')")
+        urls = await _search_wikimedia(simplified, max_results=max_results)
+        if urls:
+            return urls
+        urls = await _search_bing(simplified, max_results=max_results)
+        if urls:
+            return urls
+
+    return []
 
 
 @traceable
@@ -149,10 +266,10 @@ async def download_image(
     min_width: int = 400,
     min_height: int = 300,
     min_bytes: int = 15000,
-    timeout: float = 12.0,
+    timeout: float = 6.0,
     seen_hashes: set[str] | None = None,
 ) -> str | None:
-    """Download, validate, deduplicate, and convert an image with timeouts and retries.
+    """Download, validate, deduplicate, and convert an image.
     
     Args:
         url: Image URL
@@ -168,44 +285,48 @@ async def download_image(
     """
     if is_stock_url(url):
         return None
-    for attempt in range(3):
-        try:
-            async with httpx.AsyncClient(
-                headers=BROWSER_HEADERS, timeout=timeout, follow_redirects=True
-            ) as client:
-                res = await client.get(url)
-                if res.status_code != 200 or len(res.content) < min_bytes:
-                    continue
+    try:
+        headers = BROWSER_HEADERS
+        verify_arg: Any = True
+        if "wikimedia.org" in url:
+            headers = {"User-Agent": "YlineLyricVideoBot/1.0 (https://github.com/pjpangilinan/yline; mailto:contact@yline.local)"}
+            verify_arg = _ssl_context
 
-                # Load with Pillow to ensure it's a valid complete image
-                img = Image.open(io.BytesIO(res.content))
-                img.load()
-                w, h = img.size
-                if w < min_width or h < min_height:
-                    continue
+        async with httpx.AsyncClient(
+            headers=headers, verify=verify_arg, timeout=timeout, follow_redirects=True
+        ) as client:
+            res = await client.get(url)
+            if res.status_code != 200 or len(res.content) < min_bytes:
+                return None
 
-                if img.mode != "RGB":
-                    img = img.convert("RGB")
+            # Load with Pillow to ensure it's a valid complete image
+            img = Image.open(io.BytesIO(res.content))
+            img.load()
+            w, h = img.size
+            if w < min_width or h < min_height:
+                return None
 
-                # Encode to JPEG and compute MD5 on the exact saved bytes
-                buf = io.BytesIO()
-                img.save(buf, format="JPEG", quality=92)
-                jpeg_bytes = buf.getvalue()
-                img_hash = hashlib.md5(jpeg_bytes).hexdigest()
+            if img.mode != "RGB":
+                img = img.convert("RGB")
 
-                if seen_hashes is not None and img_hash in seen_hashes:
-                    logger.debug(f"Skipping duplicate image hash {img_hash[:8]} for {url}")
-                    return None
+            # Encode to JPEG and compute MD5 on the exact saved bytes
+            buf = io.BytesIO()
+            img.save(buf, format="JPEG", quality=92)
+            jpeg_bytes = buf.getvalue()
+            img_hash = hashlib.md5(jpeg_bytes).hexdigest()
 
-                os.makedirs(os.path.dirname(os.path.abspath(save_path)), exist_ok=True)
-                with open(save_path, "wb") as f:
-                    f.write(jpeg_bytes)
-                if seen_hashes is not None:
-                    seen_hashes.add(img_hash)
-                return save_path
-        except Exception as e:
-            logger.debug(f"Download attempt {attempt+1} failed for {url}: {e}")
-            await asyncio.sleep(0.5 + attempt * 1.0)
+            if seen_hashes is not None and img_hash in seen_hashes:
+                logger.debug(f"Skipping duplicate image hash {img_hash[:8]} for {url}")
+                return None
+
+            os.makedirs(os.path.dirname(os.path.abspath(save_path)), exist_ok=True)
+            with open(save_path, "wb") as f:
+                f.write(jpeg_bytes)
+            if seen_hashes is not None:
+                seen_hashes.add(img_hash)
+            return save_path
+    except Exception as e:
+        logger.debug(f"Download failed for {url}: {e}")
     return None
 
 
