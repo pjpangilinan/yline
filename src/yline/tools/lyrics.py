@@ -46,19 +46,31 @@ def parse_lrc(lrc_text: str) -> list[dict[str, Any]]:
                     "start_ms": start_ms
                 })
             
-    # Calculate end_ms: cap dialogue display during long instrumental breaks (>4.5s)
-    # to avoid subtitles freezing across guitar solos / interludes.
+    # Calculate end_ms:
+    # 1. Allow the lyric to display for the duration of the vocal line based on word count.
+    #    Singing speed is typically ~300-450ms per word. We grant at least (word_count * 400ms + 1200ms)
+    #    with a healthy minimum of 4.0s (capped at 8.0s).
+    # 2. If the gap to the next line is a normal pause (<= 7.0s), hold the subtitle continuously
+    #    until the next line begins to keep the screen engaging and readable without premature disappearances.
+    # 3. If there is a long instrumental break (> 7.0s, e.g. guitar solo / bridge), display the lyric
+    #    for its natural duration (or up to 6.5s) and leave the rest as clean instrumental gap.
     for i in range(len(parsed_lines)):
+        text_words = len(parsed_lines[i]["text"].split())
+        natural_dur_ms = max(4000, min(8000, text_words * 450 + 1200))
+        
         if i < len(parsed_lines) - 1:
             next_start = parsed_lines[i + 1]["start_ms"]
             gap = next_start - parsed_lines[i]["start_ms"]
-            if gap > 4500:
-                parsed_lines[i]["end_ms"] = parsed_lines[i]["start_ms"] + 4000
+            if gap > 7000:
+                # Genuine instrumental break or long solo: display for natural duration, cap at 6.5s
+                display_dur = min(gap - 1500, max(natural_dur_ms, 5000))
+                parsed_lines[i]["end_ms"] = parsed_lines[i]["start_ms"] + display_dur
             else:
+                # Normal gap: hold subtitle all the way to the next vocal line
                 parsed_lines[i]["end_ms"] = next_start
         else:
-            # For the last line, display for up to 4 seconds
-            parsed_lines[i]["end_ms"] = parsed_lines[i]["start_ms"] + 4000
+            # For the last line, hold for natural reading duration
+            parsed_lines[i]["end_ms"] = parsed_lines[i]["start_ms"] + natural_dur_ms
             
     return parsed_lines
 

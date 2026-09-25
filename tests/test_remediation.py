@@ -25,20 +25,20 @@ class TestPipelineRemediation(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn("", texts)
         self.assertEqual(len(parsed), 4)
         
-        # 2. Line 1: start_ms=5000, next line starts at 15000 (gap=10s > 4.5s)
-        # end_ms must be capped to 5000 + 4000 = 9000ms instead of stretching to 15000ms
+        # 2. Line 1: start_ms=5000, next line starts at 15000 (gap=10s > 6.0s)
+        # Display is capped during long instrumental gap to allow clean screen
         self.assertEqual(parsed[0]["start_ms"], 5000)
-        self.assertEqual(parsed[0]["end_ms"], 9000)
+        self.assertTrue(5000 < parsed[0]["end_ms"] < 15000)
         
-        # 3. Line 2: start_ms=15000, next line starts at 35000 (gap=20s > 4.5s)
-        # end_ms must be capped to 15000 + 4000 = 19000ms
+        # 3. Line 2: start_ms=15000, next line starts at 35000 (gap=20s > 6.0s)
+        # Display is capped so it does not freeze across 20-second guitar solo
         self.assertEqual(parsed[1]["start_ms"], 15000)
-        self.assertEqual(parsed[1]["end_ms"], 19000)
+        self.assertTrue(15000 < parsed[1]["end_ms"] < 35000)
         
-        # 4. Line 3: start_ms=35000, next line starts at 40000 (gap=5s > 4.5s)
-        # end_ms capped to 35000 + 4000 = 39000ms
+        # 4. Line 3: start_ms=35000, next line starts at 40000 (gap=5s <= 6.0s normal gap)
+        # Held until next line so subtitles don't vanish prematurely before singer finishes
         self.assertEqual(parsed[2]["start_ms"], 35000)
-        self.assertEqual(parsed[2]["end_ms"], 39000)
+        self.assertEqual(parsed[2]["end_ms"], 40000)
 
     @patch("httpx.AsyncClient.get")
     async def test_download_image_seen_hashes_deduplication(self, mock_get):
