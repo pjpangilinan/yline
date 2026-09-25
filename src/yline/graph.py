@@ -65,19 +65,42 @@ async def error_node(state: PipelineState) -> dict[str, Any]:
 
 
 def route_start(state: PipelineState) -> str:
-    """Route from start based on cached state, verifying file existence."""
-    if not state.get("song_metadata"): return "song_resolver"
-    if not state.get("lyrics"): return "lyrics_agent"
-    if not state.get("images"): return "image_agent"
-    
+    """Route from start based on cached state, verifying file and directory existence."""
+    metadata = state.get("song_metadata")
+    if not metadata:
+        return "song_resolver"
+    if not state.get("lyrics"):
+        return "lyrics_agent"
+
+    artist = metadata.get("artist", "")
+    title = metadata.get("title", "")
+    song_dir = os.path.join("output", f"{artist} - {title}".replace("/", "_"))
+
+    # If the user deleted the song output directory, start fresh from lyrics or resolver
+    if not os.path.isdir(song_dir):
+        logger.info(f"Output directory '{song_dir}' not found on disk. Resetting cached assets.")
+        state["images"] = []
+        state["audio_path"] = None
+        state["video_path"] = None
+        return "image_agent"
+
+    # Check images existence: if all image files were deleted, re-run image agent
+    cached_images = state.get("images", [])
+    valid_images = [img for img in cached_images if img.get("path") and os.path.isfile(img["path"])]
+    if not valid_images:
+        state["images"] = []
+        return "image_agent"
+
     # Check audio_path and ensure the file exists on disk
     audio_p = state.get("audio_path")
     if not audio_p or not os.path.isfile(audio_p) or os.path.getsize(audio_p) == 0:
+        state["audio_path"] = None
         return "audio_agent"
 
     # Check video_path and ensure the file exists on disk
     video_p = state.get("video_path")
     if not video_p or not os.path.isfile(video_p) or os.path.getsize(video_p) == 0:
+        state["video_path"] = None
         return "video_assembler"
 
     return "video_assembler"
@@ -173,10 +196,24 @@ async def run_pipeline(
     if os.path.exists(state_file) and not force:
         with open(state_file, "r") as f:
             initial_state = json.load(f)
-            # Ensure test_mode flag is updated even on cached loads
+            
+        # Check if user deleted the song directory — if so, discard stale cache completely
+        meta = initial_state.get("song_metadata")
+        if meta and meta.get("artist") and meta.get("title"):
+            song_dir = os.path.join("output", f"{meta['artist']} - {meta['title']}".replace("/", "_"))
+            if not os.path.isdir(song_dir):
+                logger.info(f"Target directory '{song_dir}' was deleted. Clearing stale state file and starting fresh.")
+                try:
+                    os.remove(state_file)
+                except Exception:
+                    pass
+                initial_state = None
+
+        if initial_state:
             initial_state["test_mode"] = test_mode
             logger.info(f"Loaded cached state from {state_file}")
-    else:
+
+    if not initial_state or force:
         if os.path.exists(state_file):
             try:
                 os.remove(state_file)
