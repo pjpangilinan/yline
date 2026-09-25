@@ -71,8 +71,8 @@ async def image_agent_node(state: PipelineState) -> dict[str, Any]:
     all_queries = await _generate_search_queries(lyrics, artist, title)
 
     # Step 2: Concurrently download unique images for each query
-    # Concurrency bounded to 4 to prevent rate limiting while allowing concurrent download/search
-    concurrency_sem = asyncio.Semaphore(4)
+    # Concurrency bounded to 2 to respect Wikimedia / Bing rate limit policies
+    concurrency_sem = asyncio.Semaphore(2)
     seen_hashes: set[str] = set()
     hash_lock = asyncio.Lock()
 

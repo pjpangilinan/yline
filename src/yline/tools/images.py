@@ -27,22 +27,57 @@ BROWSER_HEADERS = {
     "Accept-Language": "en-US,en;q=0.9",
 }
 
-# Image rate limiter to space out requests and avoid IP bans
+# Domain-specific rate limiter with automatic exponential backoff on 429
 class ImageRateLimiter:
-    def __init__(self, min_delay: float = 1.0):
-        self.min_delay = min_delay
-        self._last_call = 0.0
+    def __init__(self):
+        # Default minimum delay per domain
+        self._min_delays: dict[str, float] = {
+            "wikimedia.org": 1.5,
+            "bing.com": 0.8,
+            "duckduckgo.com": 1.2,
+            "default": 0.5,
+        }
+        self._last_call: dict[str, float] = {}
+        self._backoff_until: dict[str, float] = {}
         self._lock = asyncio.Lock()
 
-    async def wait(self):
+    def _get_domain_key(self, host_or_url: str) -> str:
+        h = host_or_url.lower()
+        for d in ["wikimedia.org", "bing.com", "duckduckgo.com"]:
+            if d in h:
+                return d
+        return "default"
+
+    async def wait(self, target: str = "default"):
+        key = self._get_domain_key(target)
         async with self._lock:
             now = asyncio.get_event_loop().time()
-            elapsed = now - self._last_call
-            if elapsed < self.min_delay:
-                await asyncio.sleep(self.min_delay - elapsed)
-            self._last_call = asyncio.get_event_loop().time()
+            
+            # If domain is in backoff (e.g., from 429 response), pause
+            until = self._backoff_until.get(key, 0.0)
+            if until > now:
+                wait_sec = until - now
+                logger.info(f"Rate limiter backing off for {key}: waiting {wait_sec:.1f}s")
+                await asyncio.sleep(wait_sec)
+                now = asyncio.get_event_loop().time()
 
-_image_rate_limiter = ImageRateLimiter(min_delay=1.2)
+            last = self._last_call.get(key, 0.0)
+            delay = self._min_delays.get(key, 0.5)
+            elapsed = now - last
+            if elapsed < delay:
+                await asyncio.sleep(delay - elapsed)
+            self._last_call[key] = asyncio.get_event_loop().time()
+
+    async def notify_rate_limit(self, target: str, backoff_seconds: float = 5.0):
+        """Called when a 429 or rate limit warning is received."""
+        key = self._get_domain_key(target)
+        async with self._lock:
+            now = asyncio.get_event_loop().time()
+            self._backoff_until[key] = max(self._backoff_until.get(key, 0.0), now + backoff_seconds)
+            logger.warning(f"Domain {key} triggered rate limit (429). Pausing requests for {backoff_seconds}s")
+
+
+_image_rate_limiter = ImageRateLimiter()
 
 # Domains that host generic watermarked stock photography
 STOCK_DOMAINS = [
@@ -119,27 +154,30 @@ WIKIMEDIA_EXCLUDE_TERMS = [
 
 
 @traceable
-async def _search_wikimedia(query: str, max_results: int = 15) -> list[str]:
+async def _search_wikimedia(query: str, max_results: int = 5) -> list[str]:
     """Search Wikimedia Commons for high-resolution, relevant public domain photos."""
     for attempt in range(2):
         try:
-            await _image_rate_limiter.wait()
+            await _image_rate_limiter.wait("wikimedia.org")
             params = {
                 "action": "query",
                 "generator": "search",
                 "gsrnamespace": "6",  # File namespace
                 "gsrsearch": query,
-                "gsrlimit": str(max_results + 5),
+                "gsrlimit": str(min(max_results + 2, 8)),
                 "prop": "imageinfo",
                 "iiprop": "url|size|mime",
                 "format": "json",
             }
             async with httpx.AsyncClient(
-                headers={"User-Agent": "YlineBot/1.0 (contact@yline.local)"},
+                headers={"User-Agent": "YlineLyricVideoBot/1.0 (https://github.com/pjpangilinan/yline; mailto:contact@yline.local)"},
                 verify=_ssl_context,
                 timeout=10.0,
             ) as client:
                 res = await client.get("https://commons.wikimedia.org/w/api.php", params=params)
+                if res.status_code == 429:
+                    await _image_rate_limiter.notify_rate_limit("wikimedia.org", backoff_seconds=8.0)
+                    continue
                 if res.status_code == 200:
                     data = res.json()
                     pages = data.get("query", {}).get("pages", {})
@@ -179,7 +217,7 @@ async def _search_bing(query: str, max_results: int = 15) -> list[str]:
 
     for attempt in range(2):
         try:
-            await _image_rate_limiter.wait()
+            await _image_rate_limiter.wait("bing.com")
             url = f"https://www.bing.com/images/search?q={query}&form=HDRSC2&first=1"
             async with httpx.AsyncClient(
                 headers=BROWSER_HEADERS, timeout=12.0, follow_redirects=True
@@ -286,6 +324,7 @@ async def download_image(
     if is_stock_url(url):
         return None
     try:
+        await _image_rate_limiter.wait(url)
         headers = BROWSER_HEADERS
         verify_arg: Any = True
         if "wikimedia.org" in url:
@@ -296,6 +335,9 @@ async def download_image(
             headers=headers, verify=verify_arg, timeout=timeout, follow_redirects=True
         ) as client:
             res = await client.get(url)
+            if res.status_code == 429:
+                await _image_rate_limiter.notify_rate_limit(url, backoff_seconds=8.0)
+                return None
             if res.status_code != 200 or len(res.content) < min_bytes:
                 return None
 
