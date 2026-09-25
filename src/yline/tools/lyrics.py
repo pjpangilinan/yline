@@ -17,16 +17,30 @@ def parse_lrc(lrc_text: str) -> list[dict[str, Any]]:
         List of dicts with text, start_ms, end_ms.
     """
     lines = []
-    pattern = re.compile(r'\[(\d+):(\d+\.\d+)\](.*)')
+    # Match standard LRC line: [mm:ss.xx] or [mm:ss.xxx] text
+    pattern = re.compile(r'\[(\d+):(\d+(?:\.\d+)?)\](.*)')
+    offset_pattern = re.compile(r'\[offset:\s*([+-]?\d+)\]', re.IGNORECASE)
     
+    global_offset_ms = 0
+    raw_lines = lrc_text.strip().split('\n')
+    for raw in raw_lines:
+        off_match = offset_pattern.match(raw.strip())
+        if off_match:
+            try:
+                global_offset_ms = int(off_match.group(1))
+            except ValueError:
+                pass
+
     parsed_lines = []
-    for line in lrc_text.strip().split('\n'):
+    for line in raw_lines:
         match = pattern.match(line.strip())
         if match:
             mins, secs, text = match.groups()
             text_str = text.strip()
             if text_str:  # Filter out empty text lines / empty instrumental markers
-                start_ms = int(int(mins) * 60000 + float(secs) * 1000)
+                # Standard LRC offset: positive offset means lyrics play earlier (or later depending on spec, standard is track delay)
+                start_ms = int(int(mins) * 60000 + float(secs) * 1000) + global_offset_ms
+                start_ms = max(0, start_ms)
                 parsed_lines.append({
                     "text": text_str,
                     "start_ms": start_ms

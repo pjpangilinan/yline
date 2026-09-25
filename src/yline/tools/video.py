@@ -147,30 +147,56 @@ def assemble_video(
         final_images.append(last_valid)
 
     # 2. Build Timeline (image_path, text, duration_sec)
+    # 2. Build Timeline strictly anchored to absolute timestamps
+    # To prevent ANY progressive drift, every segment's duration is computed relative to
+    # the target absolute timeline, eliminating accumulated rounding errors and overlap delays.
     timeline: list[tuple[str | None, str, float]] = []
+    current_time_sec = 0.0
+
+    song_label = os.path.basename(output_path).replace(".mp4", "")
+    first_img = final_images[0] if final_images else None
 
     # Intro clip if song doesn't start at 0
     if lyrics and lyrics[0]["start_ms"] > 0:
-        intro_duration = lyrics[0]["start_ms"] / 1000.0
-        intro_img = final_images[0] if final_images else None
-        song_label = os.path.basename(output_path).replace(".mp4", "")
-        timeline.append((intro_img, f"Now Playing\n\n{song_label}", intro_duration))
+        first_start = lyrics[0]["start_ms"] / 1000.0
+        if first_start > 0:
+            timeline.append((first_img, f"Now Playing\n\n{song_label}", round(first_start, 4)))
+            current_time_sec = first_start
 
     for i, line in enumerate(lyrics):
-        start_sec = line["start_ms"] / 1000.0
-        end_sec = line["end_ms"] / 1000.0
-        duration = max(0.5, end_sec - start_sec)
+        target_start = line["start_ms"] / 1000.0
+        target_end = line["end_ms"] / 1000.0
         text = line.get("text", "")
         img_p = final_images[i] if i < len(final_images) else (final_images[-1] if final_images else None)
 
-        timeline.append((img_p, text, duration))
+        # 2a. If current_time_sec is behind target_start (e.g. instrumental gap), insert gap slide
+        if target_start > current_time_sec + 0.005:
+            gap_dur = target_start - current_time_sec
+            timeline.append((img_p, "", round(gap_dur, 4)))
+            current_time_sec = target_start
 
-        # Gap between lyric lines
+        # 2b. Determine line end boundary anchored to next lyric start
         if i < len(lyrics) - 1:
-            next_start_sec = lyrics[i + 1]["start_ms"] / 1000.0
-            gap_duration = next_start_sec - end_sec
-            if gap_duration > 0.1:
-                timeline.append((img_p, "", gap_duration))
+            next_start = lyrics[i + 1]["start_ms"] / 1000.0
+            # Ensure line doesn't run past the start of the next line
+            line_end = min(target_end, next_start)
+            # Ensure at least minimal non-negative duration if timestamps overlap
+            if line_end <= current_time_sec:
+                line_end = next_start
+        else:
+            line_end = target_end
+
+        line_dur = max(0.1, line_end - current_time_sec)
+        timeline.append((img_p, text, round(line_dur, 4)))
+        current_time_sec += line_dur
+
+        # 2c. Gap before next line if instrumental break
+        if i < len(lyrics) - 1:
+            next_start = lyrics[i + 1]["start_ms"] / 1000.0
+            if next_start > current_time_sec + 0.005:
+                gap_dur = next_start - current_time_sec
+                timeline.append((img_p, "", round(gap_dur, 4)))
+                current_time_sec = next_start
 
     # Outro padding: if full video mode and audio is longer than lyrics, pad with last slide
     if not test_mode and audio_path and os.path.isfile(audio_path):
@@ -185,11 +211,11 @@ def assemble_video(
             if m:
                 hh, mm, ss = m.groups()
                 audio_sec = int(hh) * 3600 + int(mm) * 60 + float(ss)
-                current_total = sum(item[2] for item in timeline)
-                if audio_sec > current_total:
-                    outro_duration = audio_sec - current_total
+                if audio_sec > current_time_sec:
+                    outro_duration = audio_sec - current_time_sec
                     last_img = final_images[-1] if final_images else None
-                    timeline.append((last_img, "", outro_duration))
+                    timeline.append((last_img, "", round(outro_duration, 4)))
+                    current_time_sec = audio_sec
         except Exception as e:
             logger.debug(f"Audio duration probe failed: {e}")
 
@@ -214,7 +240,7 @@ def assemble_video(
 
                 slide_file = slide_cache[cache_key]
                 clean_p = os.path.abspath(slide_file).replace("\\", "/")
-                f.write(f"file '{clean_p}'\nduration {duration:.3f}\n")
+                f.write(f"file '{clean_p}'\nduration {duration:.4f}\n")
 
             # In FFmpeg concat demuxer, the last file must be repeated to set duration
             last_file = os.path.abspath(slide_cache[timeline[-1][0], timeline[-1][1]]).replace("\\", "/")
@@ -231,7 +257,7 @@ def assemble_video(
         ]
 
         if has_audio:
-            base_cmd.extend(["-ss", "0", "-t", f"{total_duration:.3f}", "-i", os.path.abspath(audio_path)])
+            base_cmd.extend(["-ss", "0", "-t", f"{total_duration:.4f}", "-i", os.path.abspath(audio_path)])
 
         # Try NVENC first, fallback to libx264 CPU encoder
         encoders = [
@@ -246,7 +272,12 @@ def assemble_video(
             cmd = list(base_cmd) + enc_args
             if has_audio:
                 cmd.extend(["-c:a", "aac", "-b:a", "192k", "-shortest"])
-            cmd.extend(["-r", "24", "-movflags", "+faststart", os.path.abspath(output_path)])
+            cmd.extend([
+                "-r", "24",
+                "-vsync", "cfr",
+                "-movflags", "+faststart",
+                os.path.abspath(output_path),
+            ])
 
             logger.info(f"Running video assembly: {enc_args[1]}...")
             proc = subprocess.run(cmd, capture_output=True, text=True)
