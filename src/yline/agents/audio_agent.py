@@ -42,9 +42,15 @@ async def audio_agent_node(state: PipelineState) -> dict[str, Any]:
     suffix = suffixes[attempts % len(suffixes)]
     query = f"{artist} - {title} {suffix}".strip()
 
-    logger.info(f"Downloading audio (attempt {attempts+1}): {query}")
+    # Calculate expected song duration from synced lyrics if available
+    lyrics = state.get("lyrics", [])
+    target_duration_sec = None
+    if lyrics and lyrics[-1].get("end_ms"):
+        target_duration_sec = lyrics[-1]["end_ms"] / 1000.0
 
-    audio_path = await download_audio(query, output_dir)
+    logger.info(f"Downloading audio (attempt {attempts+1}): {query} (target dur: {target_duration_sec}s)")
+
+    audio_path = await download_audio(query, output_dir, target_duration_sec=target_duration_sec)
     if audio_path:
         logger.info(f"Audio downloaded: {audio_path}")
         return {"audio_path": audio_path}

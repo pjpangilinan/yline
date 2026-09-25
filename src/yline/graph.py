@@ -65,12 +65,21 @@ async def error_node(state: PipelineState) -> dict[str, Any]:
 
 
 def route_start(state: PipelineState) -> str:
-    """Route from start based on cached state."""
+    """Route from start based on cached state, verifying file existence."""
     if not state.get("song_metadata"): return "song_resolver"
     if not state.get("lyrics"): return "lyrics_agent"
     if not state.get("images"): return "image_agent"
-    if not state.get("audio_path"): return "audio_agent"
-    if not state.get("video_path"): return "video_assembler"
+    
+    # Check audio_path and ensure the file exists on disk
+    audio_p = state.get("audio_path")
+    if not audio_p or not os.path.isfile(audio_p) or os.path.getsize(audio_p) == 0:
+        return "audio_agent"
+
+    # Check video_path and ensure the file exists on disk
+    video_p = state.get("video_path")
+    if not video_p or not os.path.isfile(video_p) or os.path.getsize(video_p) == 0:
+        return "video_assembler"
+
     return "video_assembler"
 
 
