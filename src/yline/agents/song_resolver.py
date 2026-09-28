@@ -18,18 +18,12 @@ from yline.rate_limiter import rate_limiter
 
 logger = logging.getLogger(__name__)
 
-SYSTEM_PROMPT = """You are a music expert agent. Your job is to take a user's song query
-and resolve it to an exact song using the search_music tool.
+SYSTEM_PROMPT = """You are a music expert agent. Your job is to resolve a user's song query to exact metadata.
 
-The query might be vague ("that sad Radiohead song"), a partial title ("bohemian"),
-or exact ("Choosin' Texas by Ella Langley"). You must figure out what song they mean
-and search for it.
-
-Rules:
-- Always use the search_music tool to look up the song
-- If the first search doesn't find a good match, try alternative queries (different spelling, artist name, etc.)
-- You have up to 3 search attempts
-- Once you find the right song, respond with ONLY the JSON metadata, nothing else
+Instructions:
+1. Call search_music to look up recordings on MusicBrainz.
+2. When query results are returned, call return_song with the artist, title, album, and release year.
+3. Call the tools directly without extra conversational text.
 """
 
 TOOL_MAP = {
@@ -53,7 +47,7 @@ async def song_resolver_node(state: PipelineState) -> dict[str, Any]:
     logger.info(f"Resolving song query: {query}")
 
     llm = ChatGroq(
-        model="qwen/qwen3.8-27b",
+        model="openai/gpt-oss-120b",
         temperature=0,
         max_tokens=500,
     )

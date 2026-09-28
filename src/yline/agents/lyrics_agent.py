@@ -91,7 +91,7 @@ async def lyrics_agent_node(state: PipelineState) -> dict[str, Any]:
     await rate_limiter.acquire(estimated_tokens=200)
 
     try:
-        llm = ChatGroq(model="qwen/qwen3.8-27b", temperature=0, max_tokens=300)
+        llm = ChatGroq(model="openai/gpt-oss-120b", temperature=0, max_tokens=300)
         response = await llm.ainvoke([
             SystemMessage(content="Suggest 2 alternative artist/title combinations to search for lyrics. Return JSON array of {artist, title} objects."),
             HumanMessage(content=f"Original: {artist} - {title}"),

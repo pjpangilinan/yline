@@ -136,7 +136,7 @@ async def _generate_search_queries(
         await rate_limiter.acquire(estimated_tokens=500)
 
         try:
-            llm = ChatGroq(model="qwen/qwen3.8-27b", temperature=0.5, max_tokens=1000)
+            llm = ChatGroq(model="openai/gpt-oss-120b", temperature=0.5, max_tokens=1000)
             response = await llm.ainvoke([
                 SystemMessage(content=SYSTEM_PROMPT),
                 HumanMessage(
