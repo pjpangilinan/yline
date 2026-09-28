@@ -193,6 +193,7 @@ async def run_pipeline(
     state_file = f"output/{safe_query}_state.json"
     os.makedirs("output", exist_ok=True)
     
+    initial_state = None
     if os.path.exists(state_file) and not force:
         with open(state_file, "r") as f:
             initial_state = json.load(f)
