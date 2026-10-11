@@ -56,21 +56,17 @@ def parse_lrc(lrc_text: str) -> list[dict[str, Any]]:
     #    for its natural duration (or up to 6.5s) and leave the rest as clean instrumental gap.
     for i in range(len(parsed_lines)):
         text_words = len(parsed_lines[i]["text"].split())
-        natural_dur_ms = max(4000, min(8000, text_words * 450 + 1200))
+        vocal_duration = text_words * 450 + 1200
         
         if i < len(parsed_lines) - 1:
             next_start = parsed_lines[i + 1]["start_ms"]
-            gap = next_start - parsed_lines[i]["start_ms"]
-            if gap > 7000:
-                # Genuine instrumental break or long solo: display for natural duration, cap at 6.5s
-                display_dur = min(gap - 1500, max(natural_dur_ms, 5000))
-                parsed_lines[i]["end_ms"] = parsed_lines[i]["start_ms"] + display_dur
+            natural_end = parsed_lines[i]["start_ms"] + vocal_duration
+            if next_start - natural_end > 3000:
+                parsed_lines[i]["end_ms"] = parsed_lines[i]["start_ms"] + min(vocal_duration, 4000)
             else:
-                # Normal gap: hold subtitle all the way to the next vocal line
                 parsed_lines[i]["end_ms"] = next_start
         else:
-            # For the last line, hold for natural reading duration
-            parsed_lines[i]["end_ms"] = parsed_lines[i]["start_ms"] + natural_dur_ms
+            parsed_lines[i]["end_ms"] = parsed_lines[i]["start_ms"] + min(vocal_duration, 4000)
             
     return parsed_lines
 
@@ -99,9 +95,43 @@ async def fetch_synced_lyrics(artist: str, title: str) -> list[dict[str, Any]] |
                 if res.status_code == 200:
                     results = res.json()
                     if results:
-                        for track in results:
-                            if track.get("syncedLyrics"):
-                                return parse_lrc(track["syncedLyrics"])
+                        valid_tracks = [t for t in results if t.get("syncedLyrics")]
+                        if valid_tracks:
+                            clean_t = title.lower().strip()
+                            clean_a = artist.lower().strip()
+
+                            def track_rank(t: dict) -> tuple[float, float]:
+                                t_name = t.get("trackName", "").lower().strip()
+                                a_name = t.get("artistName", "").lower().strip()
+                                dur = float(t.get("duration") or 210.0)
+
+                                penalty = 0.0
+                                # Exact title match
+                                if t_name == clean_t:
+                                    penalty -= 50.0
+                                elif clean_t in t_name:
+                                    penalty -= 20.0
+                                else:
+                                    penalty += 40.0
+
+                                # Artist match
+                                if clean_a in a_name or any(w in a_name for w in clean_a.split() if len(w) > 3):
+                                    penalty -= 30.0
+
+                                # Typical commercial radio single duration (150s - 270s)
+                                if 150 <= dur <= 270:
+                                    penalty -= 25.0
+                                elif dur > 320:
+                                    penalty += 35.0  # Extended / music video audio with long intro
+                                elif dur < 60:
+                                    penalty += 60.0  # Snippet / preview
+
+                                # Secondary tie-breaker: closeness to standard 215s pop song
+                                dur_dist = abs(dur - 215.0)
+                                return (penalty, dur_dist)
+
+                            best_track = min(valid_tracks, key=track_rank)
+                            return parse_lrc(best_track["syncedLyrics"])
                     return None
                 elif res.status_code == 429:
                     await asyncio.sleep(2.0 * (attempt + 1))

@@ -50,7 +50,13 @@ async def audio_agent_node(state: PipelineState) -> dict[str, Any]:
 
     logger.info(f"Downloading audio (attempt {attempts+1}): {query} (target dur: {target_duration_sec}s)")
 
-    audio_path = await download_audio(query, output_dir, target_duration_sec=target_duration_sec)
+    audio_path = await download_audio(
+        query,
+        output_dir,
+        target_duration_sec=target_duration_sec,
+        expected_title=title,
+        expected_artist=artist,
+    )
     if audio_path:
         logger.info(f"Audio downloaded: {audio_path}")
         return {"audio_path": audio_path}

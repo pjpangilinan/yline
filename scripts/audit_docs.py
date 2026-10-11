@@ -49,7 +49,7 @@ import re
 
 ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
 
-vids = ['color.mp4', 'panic.mp4', 'take_me_dancing.mp4', 'jane.mp4', 'kalapastangan.mp4']
+vids = ['color.mp4', 'panic.mp4', 'bad_days.mp4', 'end.mp4', 'shelter.mp4']
 for v in vids:
     full_path = os.path.join('docs', 'assets', 'videos', v)
     sz = os.path.getsize(full_path) / (1024*1024)

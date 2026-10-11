@@ -18,9 +18,9 @@ Experience the interactive scrollytelling showcase running on GitHub Pages:
 Explore every stage of the multi-agent pipeline (Metadata Resolution, Lyric Syncing, Mood-Matched Image Scraping, and Video Assembly) across 5 full tracks:
 - **Lotus Juice** — *Color Your Night*
 - **Panic! at the Disco** — *London Beckoned Songs About Money Written by Machines*
-- **Will Joseph Cook** — *Take Me Dancing*
-- **The Long Faces** — *Jane!*
-- **fitterkarma** — *Kalapastangan*
+- **AJR** — *100 Bad Days*
+- **Owl City** — *This Isn't the End*
+- **Porter Robinson** — *Shelter*
 
 ---
 
@@ -42,15 +42,15 @@ flowchart TD
     H --> K(Audio Agent)
     K -->|Download Audio| L{yt-dlp}
     K --> M(Video Assembler)
-    M -->|Compose with MoviePy| N((Final .mp4))
+    M -->|Split-CFR Hardware Assembly| N((Final .mp4))
 ```
 
 ### The Architecture
-1. **Song Resolver**: Takes a loose user query (e.g. *"Color Your Night"*) and resolves official artist, title, album, and release year via the MusicBrainz API.
-2. **Lyrics Agent**: Fetches highly accurate, human-verified synced `.lrc` files from LRCLIB with instrumental gap capping. If unavailable, it pivots to the Genius API and utilizes an LLM protocol to predict timestamps mathematically.
-3. **Image Agent**: Reads each lyric line to craft evocative, stylistic prompts, query DuckDuckGo Images, and enforce perceptual hash deduplication to guarantee unique, mood-appropriate imagery.
-4. **Audio Agent**: Leverages `yt-dlp` to securely fetch the highest-quality official audio stream for the resolved metadata.
-5. **Video Assembler**: Uses MoviePy to composite visual slides, synchronized ASS typography, and audio into 1080p hardware-accelerated `.mp4` video.
+1. **Song Resolver**: Takes a loose user query (e.g. *"Color Your Night"*) and resolves official artist, title, album, and release year via the MusicBrainz API with fielded search fallbacks.
+2. **Lyrics Agent**: Fetches highly accurate, human-verified synced `.lrc` files from LRCLIB with instrumental gap capping and standard single-duration ranking. If unavailable, it pivots to the Genius API and utilizes an LLM protocol to predict timestamps mathematically.
+3. **Image Agent**: Reads each lyric line to craft evocative, stylistic prompts, query DuckDuckGo, Bing, and Wikimedia, and enforce perceptual hash deduplication to guarantee unique, mood-appropriate imagery.
+4. **Audio Agent**: Leverages `yt-dlp` to securely fetch the highest-quality official audio stream matching the resolved title and expected duration.
+5. **Video Assembler**: Composites high-contrast typography and LANCZOS-scaled backgrounds using Pillow, then renders via a batch Split-CFR pipeline directly through hardware-accelerated FFmpeg (`h264_nvenc` or `libx264`), ensuring constant 24fps CFR synchronization and zero dropped frames.
 
 ---
 

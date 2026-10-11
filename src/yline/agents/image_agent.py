@@ -89,13 +89,9 @@ async def image_agent_node(state: PipelineState) -> dict[str, Any]:
                     save_path = os.path.join(output_dir, f"img_{i:03d}.jpg")
                     for url in urls:
                         try:
-                            async with hash_lock:
-                                current_seen = set(seen_hashes)
-                            path = await download_image(url, save_path, seen_hashes=current_seen)
+                            path = await download_image(url, save_path, seen_hashes=seen_hashes)
                             if not path:
                                 continue
-                            async with hash_lock:
-                                seen_hashes.update(current_seen)
                             return {
                                 "path": path,
                                 "lyric_index": i,

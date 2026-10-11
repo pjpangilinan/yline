@@ -272,249 +272,241 @@ const songData = {
     ],
         videoSrc: "assets/videos/panic.mp4?v=1"
     },
-    take_me_dancing: {
-        metadata: {"artist": "Will Joseph Cook", "title": "Take Me Dancing", "album": "Sweet Jelly Roll", "year": 2016},
-        lyrics: `[00:01.74] Here's to Julian, a man among a million others
-[00:06.88] Turned his back upon it all
-[00:12.57] Raise another glass then smash it up into its fragments
-[00:18.65] Walking barefoot on the ground
-[00:23.09] And as I fall into the bottle bank (broken glass)
-[00:29.03] You can make me into anything
-[00:32.07] As long as I'm reflecting you
-[00:35.16] Lonely is your love
-[00:37.85] I could be the answer to
-[00:41.03] All of your prayers
-[00:44.65] Take me dancing
-[00:46.94] Lonely ain't enough
-[00:49.50] I could be the answer to
-[00:52.66] All of your prayers
-[00:56.37] Take me dancing
-[00:59.21] Sing to Emily, make her laugh and talk her accent
-[01:05.58] See the colour in her eyes
-[01:11.06] Then you'll take her palm and joke about a life together
-[01:17.11] Lying, smoking on the ground
-[01:21.43] And as I fall into the bottle bank (broken glass)
-[01:27.61] You can make me into anything
-[01:30.67] As long and I'm reflecting you
-[01:33.79] Lonely is your love
-[01:36.49] I could be the answer to
-[01:39.49] All of your prayers
-[01:43.22] Take me dancing
-[01:45.33] Lonely ain't enough
-[01:48.18] I could be the answer to
-[01:51.15] All of your prayers
-[01:54.84] Take me dancing
-[01:57.20] Every moment (every moment)
-[02:03.19] Always like this (always like this)
-[02:08.52] We've got our come ups
-[02:11.48] (We've got our come ups)
-[02:14.06] And your dirty mind
-[02:20.62] Lonely is your love
-[02:23.21] I could be the answer to
-[02:26.22] All of your prayers
-[02:30.20] Take me dancing
-[02:32.27] Lonely ain't enough
-[02:35.16] I could be the answer to
-[02:38.14] All of your prayers
-[02:41.62] Take me dancing
-[02:43.85] We could walk to the shitty bars and
-[02:46.80] We could swing to Americana
-[02:49.88] I don't have much, don't make a difference, just
-[02:53.56] Take me dancing
-[02:55.78] We could walk to the shitty bars and
-[02:58.64] We could swing to Americana
-[03:01.38] I don't have much, don't make a difference, just
-[03:05.12] Take me dancing`,
+    bad_days: {
+        metadata: {"artist": "AJR", "title": "100 Bad Days", "album": "OK Orchestra", "year": 2017, "musicbrainz_id": "33b640c6-e84b-44bc-96c3-dfbb545898f5"},
+        lyrics: `[00:04.10] Remember when we all got drunk
+[00:07.18] I ended up with two broke thumbs
+[00:10.67] Oh my god, I felt so dumb
+[00:13.95] Lucky me
+[00:17.20] I wrote a song that no one knows
+[00:20.43] I played a show and no one showed
+[00:24.04] Oh my god, I felt so alone
+[00:27.26] Lucky me
+[00:32.19] When all is going wrong
+[00:34.18] And you're scared as hell
+[00:38.90] Whatcha gonna do?
+[00:40.39] Who you gonna tell?
+[00:42.26] Maybe a hundred bad days
+[00:44.94] Made a hundred good stories
+[00:46.69] A hundred good stories
+[00:47.99] Make me interesting at parties
+[00:50.03] A hundred bad days
+[00:51.60] Made a hundred good stories
+[00:53.36] A hundred good stories
+[00:54.89] Make me interesting at parties, yeah
+[00:56.87] No, I ain't scared of you
+[00:59.99] No, I ain't scared of you, no more
+[01:03.74] (Da, da-da-da-da-da-da-da-da-da-da)
+[01:06.71] (Da, da-da-da-da-da-da-da-da-da-da)
+[01:10.31] No, I ain't scared of you
+[01:13.49] No, I ain't scared of you, no more
+[01:20.32] Remember when she broke my heart
+[01:23.22] Waiting for the waiter to return my card
+[01:27.30] Right as I let down my guard
+[01:30.73] Lucky me
+[01:33.85] We had to work a bit more hard
+[01:36.40] Only just to get a little bit less far
+[01:40.12] We could laugh about it all tomorrow
+[01:43.92] Couldn't we?
+[01:48.25] When all is going wrong
+[01:50.02] And you're scared as hell
+[01:55.06] Whatcha gonna do?
+[01:56.80] Who you gonna tell?
+[01:58.79] Maybe a hundred bad days
+[02:01.55] Made a hundred good stories
+[02:03.38] A hundred good stories
+[02:04.69] Make me interesting at parties
+[02:06.55] A hundred bad days
+[02:07.94] Made a hundred good stories
+[02:09.74] A hundred good stories
+[02:11.54] Make me interesting at parties, yeah
+[02:13.54] No, I ain't scared of you
+[02:16.49] No, I ain't scared of you, no more
+[02:20.04] (Da, da-da-da-da-da-da-da-da-da-da)
+[02:23.21] (Da, da-da-da-da-da-da-da-da-da-da)
+[02:26.97] No, I ain't scared of you
+[02:30.12] No, I ain't scared of you no more
+[02:44.82] (Screw your thing, it goes like this!)
+[02:53.54] No, I ain't scared of you
+[02:57.06] No, I ain't scared of you
+[02:59.67] A hundred bad days
+[03:01.09] Made a hundred good stories
+[03:02.88] A hundred good stories
+[03:04.42] Make me interesting at parties, yeah
+[03:06.82] No, I ain't scared of you
+[03:09.68] No, I ain't scared of you
+[03:13.18] A hundred bad days
+[03:14.70] Made a hundred good stories
+[03:16.10] A hundred good stories
+[03:17.86] Make me interesting at parties, yeah
+[03:20.23] No, I ain't scared of you
+[03:23.56] No, I ain't scared of you, no more
+`,
         images: [
-            { src: "assets/images/take_me_dancing/img_000.jpg", prompt: "Here's to Julian, a man among " },
-            { src: "assets/images/take_me_dancing/img_001.jpg", prompt: "Turned his back upon it all" },
-            { src: "assets/images/take_me_dancing/img_002.jpg", prompt: "Raise another glass then smash" },
-            { src: "assets/images/take_me_dancing/img_003.jpg", prompt: "Walking barefoot on the ground" },
-            { src: "assets/images/take_me_dancing/img_004.jpg", prompt: "And as I fall into the bottle " },
-            { src: "assets/images/take_me_dancing/img_005.jpg", prompt: "You can make me into anything" },
-            { src: "assets/images/take_me_dancing/img_006.jpg", prompt: "As long as I'm reflecting you" },
-            { src: "assets/images/take_me_dancing/img_007.jpg", prompt: "Lonely is your love" },
-            { src: "assets/images/take_me_dancing/img_008.jpg", prompt: "I could be the answer to" },
-            { src: "assets/images/take_me_dancing/img_009.jpg", prompt: "All of your prayers" },
-            { src: "assets/images/take_me_dancing/img_010.jpg", prompt: "Take me dancing" },
-            { src: "assets/images/take_me_dancing/img_011.jpg", prompt: "Lonely ain't enough" },
-            { src: "assets/images/take_me_dancing/img_012.jpg", prompt: "I could be the answer to" },
-            { src: "assets/images/take_me_dancing/img_013.jpg", prompt: "All of your prayers" },
-            { src: "assets/images/take_me_dancing/img_014.jpg", prompt: "Take me dancing" },
-            { src: "assets/images/take_me_dancing/img_015.jpg", prompt: "Sing to Emily, make her laugh " },
-            { src: "assets/images/take_me_dancing/img_016.jpg", prompt: "See the colour in her eyes" },
-            { src: "assets/images/take_me_dancing/img_017.jpg", prompt: "Then you'll take her palm and " },
-            { src: "assets/images/take_me_dancing/img_018.jpg", prompt: "Lying, smoking on the ground" },
-            { src: "assets/images/take_me_dancing/img_019.jpg", prompt: "And as I fall into the bottle " },
-            { src: "assets/images/take_me_dancing/img_020.jpg", prompt: "You can make me into anything" },
-            { src: "assets/images/take_me_dancing/img_021.jpg", prompt: "As long and I'm reflecting you" },
-            { src: "assets/images/take_me_dancing/img_022.jpg", prompt: "Lonely is your love" },
-            { src: "assets/images/take_me_dancing/img_023.jpg", prompt: "I could be the answer to" },
-            { src: "assets/images/take_me_dancing/img_024.jpg", prompt: "All of your prayers" },
-            { src: "assets/images/take_me_dancing/img_025.jpg", prompt: "Take me dancing" },
-            { src: "assets/images/take_me_dancing/img_026.jpg", prompt: "Lonely ain't enough" },
-            { src: "assets/images/take_me_dancing/img_027.jpg", prompt: "I could be the answer to" },
-            { src: "assets/images/take_me_dancing/img_028.jpg", prompt: "All of your prayers" },
-            { src: "assets/images/take_me_dancing/img_029.jpg", prompt: "Take me dancing" },
-            { src: "assets/images/take_me_dancing/img_030.jpg", prompt: "Every moment (every moment)" },
-            { src: "assets/images/take_me_dancing/img_031.jpg", prompt: "Always like this (always like " },
-            { src: "assets/images/take_me_dancing/img_032.jpg", prompt: "We've got our come ups" },
-            { src: "assets/images/take_me_dancing/img_033.jpg", prompt: "(We've got our come ups)" },
-            { src: "assets/images/take_me_dancing/img_034.jpg", prompt: "And your dirty mind" },
-            { src: "assets/images/take_me_dancing/img_035.jpg", prompt: "Lonely is your love" },
-            { src: "assets/images/take_me_dancing/img_036.jpg", prompt: "I could be the answer to" },
-            { src: "assets/images/take_me_dancing/img_037.jpg", prompt: "All of your prayers" },
-            { src: "assets/images/take_me_dancing/img_038.jpg", prompt: "Take me dancing" },
-            { src: "assets/images/take_me_dancing/img_039.jpg", prompt: "Lonely ain't enough" },
-            { src: "assets/images/take_me_dancing/img_040.jpg", prompt: "I could be the answer to" },
-            { src: "assets/images/take_me_dancing/img_041.jpg", prompt: "All of your prayers" },
-            { src: "assets/images/take_me_dancing/img_042.jpg", prompt: "Take me dancing" },
-            { src: "assets/images/take_me_dancing/img_043.jpg", prompt: "We could walk to the shitty ba" },
-            { src: "assets/images/take_me_dancing/img_044.jpg", prompt: "We could swing to Americana" },
-            { src: "assets/images/take_me_dancing/img_045.jpg", prompt: "I don't have much, don't make " },
-            { src: "assets/images/take_me_dancing/img_046.jpg", prompt: "Take me dancing" },
-            { src: "assets/images/take_me_dancing/img_047.jpg", prompt: "We could walk to the shitty ba" },
-            { src: "assets/images/take_me_dancing/img_048.jpg", prompt: "We could swing to Americana" },
-            { src: "assets/images/take_me_dancing/img_049.jpg", prompt: "I don't have much, don't make " },
-            { src: "assets/images/take_me_dancing/img_050.jpg", prompt: "Take me dancing" }
+            { src: "assets/images/bad_days/img_000.jpg", prompt: "friends drinking beer" },
+            { src: "assets/images/bad_days/img_001.jpg", prompt: "bandaged thumbs" },
+            { src: "assets/images/bad_days/img_002.jpg", prompt: "head in hands" },
+            { src: "assets/images/bad_days/img_003.jpg", prompt: "empty street" },
+            { src: "assets/images/bad_days/img_004.jpg", prompt: "blank notebook" },
+            { src: "assets/images/bad_days/img_005.jpg", prompt: "empty concert stage" },
+            { src: "assets/images/bad_days/img_006.jpg", prompt: "solitary figure" },
+            { src: "assets/images/bad_days/img_007.jpg", prompt: "abandoned car" },
+            { src: "assets/images/bad_days/img_008.jpg", prompt: "chaotic mess" },
+            { src: "assets/images/bad_days/img_009.jpg", prompt: "trembling hands" },
+            { src: "assets/images/bad_days/img_010.jpg", prompt: "shrugging shoulders" },
+            { src: "assets/images/bad_days/img_011.jpg", prompt: "whispering secrets" },
+            { src: "assets/images/bad_days/img_012.jpg", prompt: "stormy sky" },
+            { src: "assets/images/bad_days/img_013.jpg", prompt: "scattered polaroids" },
+            { src: "assets/images/bad_days/img_014.jpg", prompt: "journal pages" },
+            { src: "assets/images/bad_days/img_015.jpg", prompt: "party crowd" },
+            { src: "assets/images/bad_days/img_016.jpg", prompt: "dark hallway" },
+            { src: "assets/images/bad_days/img_017.jpg", prompt: "coffee stains" },
+            { src: "assets/images/bad_days/img_018.jpg", prompt: "old letters" },
+            { src: "assets/images/bad_days/img_019.jpg", prompt: "laughing friends" },
+            { src: "assets/images/bad_days/img_020.jpg", prompt: "defiant face" },
+            { src: "assets/images/bad_days/img_021.jpg", prompt: "shattered mirror" },
+            { src: "assets/images/bad_days/img_022.jpg", prompt: "empty stage" },
+            { src: "assets/images/bad_days/img_023.jpg", prompt: "empty stage" },
+            { src: "assets/images/bad_days/img_024.jpg", prompt: "defiant face" },
+            { src: "assets/images/bad_days/img_025.jpg", prompt: "shattered mirror" },
+            { src: "assets/images/bad_days/img_026.jpg", prompt: "broken heart" },
+            { src: "assets/images/bad_days/img_027.jpg", prompt: "restaurant table" },
+            { src: "assets/images/bad_days/img_028.jpg", prompt: "lowered shield" },
+            { src: "assets/images/bad_days/img_029.jpg", prompt: "lucky coin" },
+            { src: "assets/images/bad_days/img_030.jpg", prompt: "heavy machinery" },
+            { src: "assets/images/bad_days/img_031.jpg", prompt: "long winding road" },
+            { src: "assets/images/bad_days/img_032.jpg", prompt: "friends laughing" },
+            { src: "assets/images/bad_days/img_033.jpg", prompt: "empty chair" },
+            { src: "assets/images/bad_days/img_034.jpg", prompt: "broken clock" },
+            { src: "assets/images/bad_days/img_035.jpg", prompt: "shaking hands" },
+            { src: "assets/images/bad_days/img_036.jpg", prompt: "question mark" },
+            { src: "assets/images/bad_days/img_037.jpg", prompt: "phone call" },
+            { src: "assets/images/bad_days/img_038.jpg", prompt: "calendar pages" },
+            { src: "assets/images/bad_days/img_039.jpg", prompt: "photo album" },
+            { src: "assets/images/bad_days/img_040.jpg", prompt: "book stack" },
+            { src: "assets/images/bad_days/img_041.jpg", prompt: "crowd party" },
+            { src: "assets/images/bad_days/img_042.jpg", prompt: "storm clouds" },
+            { src: "assets/images/bad_days/img_043.jpg", prompt: "journal writing" },
+            { src: "assets/images/bad_days/img_051.jpg", prompt: "standing tall silhouette" },
+            { src: "assets/images/bad_days/img_061.jpg", prompt: "calendar pages" }
         ],
-        videoSrc: "assets/videos/take_me_dancing.mp4?v=20"
+        videoSrc: "assets/videos/bad_days.mp4?v=22"
     },
-    jane: {
-        metadata: {"artist": "The Long Faces", "title": "Jane!", "album": "Jane!", "year": 2023},
-        lyrics: `[00:01.49] Won't the devil guide your hand for good luck
-[00:05.92] To hold the honeysuckle rose as she lies down
-[00:12.74] Reading the paper, reading the world right round
-[00:16.96] And her eyes record the sweet surprise of those who died that day
-[00:25.87] Leaving her breathless, leading her hand to the grave
-[00:41.87] And Jane, you're early
-[00:45.35] Your life's work is dirtied by the fools who adore you
-[00:52.16] Only to find, only to find you out
-[00:56.66] They saw you dressing in the backroom
-[01:00.96] Now they'll pay what they owe you
-[01:05.13] It's only small change, red on the green green grass
-[01:13.64] Won't the devil take you back for more
-[01:18.25] To open closed doors and keep the good from the great
-[01:25.06] Evil in equal, seeking to kill and create
-[01:29.31] How grand
-[01:31.41] The milk and honey land is on her tongue again
-[01:38.20] Taste of the violence, trying to silence her head
-[01:54.18] And Jane, you're early
-[01:57.64] Your life's work is dirtied by the fools who adore you
-[02:04.47] Biding your time, biding your time to strike, surely
-[02:10.82] The poison makes a portrait of your face in the mirror
-[02:17.59] Smiling with fright
-[02:20.90] Ah!
-[02:33.67] And Jane, you're early
-[02:37.15] Your life's work is dirtied by the fools who adore you
-[02:43.91] Only to find, only to find you out
-[02:48.42] They saw you dressing in the backroom
-[02:52.79] Now they'll pay what they owe you
-[02:56.88] It's only small change, red on the green green grass`,
+    end: {
+        metadata: {"artist": "Owl City", "title": "This Isn't the End", "album": "Mobile Orchestra", "year": 2015, "musicbrainz_id": "9cfa86cd-d0a4-412e-9ef0-7361835c16db"},
+        lyrics: `[00:00.25] An eight-year-old girl had a panic attack
+[00:06.54] 'Cause the father she loved left and never looked back
+[00:13.45] No longer the hero she counted on
+[00:20.14] He told her he loved her, and then he was gone
+[00:26.40] She tried to look happy in front of her friends
+[00:33.16] But knew that she'd never feel normal again
+[00:39.57] She fought back the tears as they filled her eyes
+[00:46.11] And wanted him back just to tell him goodbye
+[00:52.08] When the rain falls down
+[00:55.75] When it all turns around
+[00:59.41] When the light goes out, this isn't the end
+[01:07.74] Her dad was a good guy that everyone liked
+[01:14.31] But nobody knew he was dying inside
+[01:20.87] He promised his family he'd be alright
+[01:27.49] And then with a gunshot, he left them behind
+[01:33.39] When the rain falls down
+[01:36.99] When it all turns around
+[01:40.82] When the light goes out, this isn't the end
+[01:48.13] When the rain falls down
+[01:51.98] When it all turns around
+[01:55.65] When the light goes out, this isn't the end, no
+[02:04.04] The role of a father he never deserved
+[02:10.30] He abandoned his daughter and never returned
+[02:17.09] And over the years though the pain was real
+[02:23.62] She finally forgave him and started to heal
+[02:30.38] How close is the ending? Well, nobody knows
+[02:36.75] The future's a mystery and anything goes
+[02:43.52] Love is confusing and life is hard
+[02:50.01] You fight to survive 'cause you've made it this far
+[02:56.52] It's all too astounding to comprehend
+[03:03.19] It's just the beginning, this isn't the end
+[03:09.67] It's just the beginning, this isn't the end
+`,
         images: [
-            { src: "assets/images/jane/img_000.jpg", prompt: "Won't the devil guide your han" },
-            { src: "assets/images/jane/img_001.jpg", prompt: "To hold the honeysuckle rose a" },
-            { src: "assets/images/jane/img_002.jpg", prompt: "Reading the paper, reading the" },
-            { src: "assets/images/jane/img_003.jpg", prompt: "And her eyes record the sweet " },
-            { src: "assets/images/jane/img_004.jpg", prompt: "Leaving her breathless, leadin" },
-            { src: "assets/images/jane/img_005.jpg", prompt: "And Jane, you're early" },
-            { src: "assets/images/jane/img_006.jpg", prompt: "Your life's work is dirtied by" },
-            { src: "assets/images/jane/img_007.jpg", prompt: "Only to find, only to find you" },
-            { src: "assets/images/jane/img_008.jpg", prompt: "They saw you dressing in the b" },
-            { src: "assets/images/jane/img_009.jpg", prompt: "Now they'll pay what they owe " },
-            { src: "assets/images/jane/img_010.jpg", prompt: "It's only small change, red on" },
-            { src: "assets/images/jane/img_011.jpg", prompt: "Won't the devil take you back " },
-            { src: "assets/images/jane/img_012.jpg", prompt: "To open closed doors and keep " },
-            { src: "assets/images/jane/img_013.jpg", prompt: "Evil in equal, seeking to kill" },
-            { src: "assets/images/jane/img_014.jpg", prompt: "How grand" },
-            { src: "assets/images/jane/img_015.jpg", prompt: "The milk and honey land is on " },
-            { src: "assets/images/jane/img_016.jpg", prompt: "Taste of the violence, trying " },
-            { src: "assets/images/jane/img_017.jpg", prompt: "And Jane, you're early" },
-            { src: "assets/images/jane/img_018.jpg", prompt: "Your life's work is dirtied by" },
-            { src: "assets/images/jane/img_019.jpg", prompt: "Biding your time, biding your " },
-            { src: "assets/images/jane/img_020.jpg", prompt: "The poison makes a portrait of" },
-            { src: "assets/images/jane/img_021.jpg", prompt: "Smiling with fright" },
-            { src: "assets/images/jane/img_022.jpg", prompt: "Ah!" },
-            { src: "assets/images/jane/img_023.jpg", prompt: "And Jane, you're early" },
-            { src: "assets/images/jane/img_024.jpg", prompt: "Your life's work is dirtied by" },
-            { src: "assets/images/jane/img_025.jpg", prompt: "Only to find, only to find you" },
-            { src: "assets/images/jane/img_026.jpg", prompt: "They saw you dressing in the b" },
-            { src: "assets/images/jane/img_027.jpg", prompt: "Now they'll pay what they owe " },
-            { src: "assets/images/jane/img_028.jpg", prompt: "It's only small change, red on" }
+            { src: "assets/images/end/img_000.jpg", prompt: "child trembling" },
+            { src: "assets/images/end/img_001.jpg", prompt: "absent father silhouette" },
+            { src: "assets/images/end/img_002.jpg", prompt: "empty superhero cape" },
+            { src: "assets/images/end/img_003.jpg", prompt: "faded love letter" },
+            { src: "assets/images/end/img_004.jpg", prompt: "forced smile group" },
+            { src: "assets/images/end/img_005.jpg", prompt: "isolated girl shadows" },
+            { src: "assets/images/end/img_006.jpg", prompt: "tears streaming face" },
+            { src: "assets/images/end/img_007.jpg", prompt: "hand reaching goodbye" },
+            { src: "assets/images/end/img_008.jpg", prompt: "heavy rain street" },
+            { src: "assets/images/end/img_009.jpg", prompt: "spinning compass" },
+            { src: "assets/images/end/img_010.jpg", prompt: "dark hallway" },
+            { src: "assets/images/end/img_011.jpg", prompt: "smiling father" },
+            { src: "assets/images/end/img_012.jpg", prompt: "empty medicine bottle" },
+            { src: "assets/images/end/img_013.jpg", prompt: "family embrace" },
+            { src: "assets/images/end/img_014.jpg", prompt: "smoking gun" },
+            { src: "assets/images/end/img_015.jpg", prompt: "rainy window" },
+            { src: "assets/images/end/img_016.jpg", prompt: "spinning compass" },
+            { src: "assets/images/end/img_017.jpg", prompt: "flickering lights" },
+            { src: "assets/images/end/img_018.jpg", prompt: "rainy window" },
+            { src: "assets/images/end/img_019.jpg", prompt: "spinning compass" },
+            { src: "assets/images/end/img_020.jpg", prompt: "dark hallway" },
+            { src: "assets/images/end/img_021.jpg", prompt: "empty father's chair" },
+            { src: "assets/images/end/img_022.jpg", prompt: "lonely swing set" },
+            { src: "assets/images/end/img_023.jpg", prompt: "faded photograph" },
+            { src: "assets/images/end/img_024.jpg", prompt: "blossoming garden" },
+            { src: "assets/images/end/img_025.jpg", prompt: "foggy road" },
+            { src: "assets/images/end/img_026.jpg", prompt: "starry sky" },
+            { src: "assets/images/end/img_027.jpg", prompt: "tangled vines" },
+            { src: "assets/images/end/img_028.jpg", prompt: "climbing rocky hill" },
+            { src: "assets/images/end/img_029.jpg", prompt: "exploding brain" },
+            { src: "assets/images/end/img_030.jpg", prompt: "sunrise horizon" },
+            { src: "assets/images/end/img_031.jpg", prompt: "fresh sprout" }
         ],
-        videoSrc: "assets/videos/jane.mp4?v=20"
+        videoSrc: "assets/videos/end.mp4?v=22"
     },
-    kalapastangan: {
-        metadata: {"artist": "fitterkarma", "title": "Kalapastangan", "album": "Kalapastangan", "year": 2023},
-        lyrics: `[00:05.16] Oras nang sambahin ang ngalan Mo
-[00:14.99] 
-[00:17.00] Para mabuhay habang-buhay sa puso't isipan Mo
-[00:26.97] 
-[00:31.50] Sino ba ako para mapansin Mo?
-[00:42.50] Mga dalangin ko sa 'Yo, sana'y pakinggan Mo
-[00:49.11] 
-[01:04.71] Pa'no ba ako magiging 'sang santo
-[01:12.96] 
-[01:16.38] Para makasama Kita diyan sa tabi ng trono Mo?
-[01:24.73] 
-[01:28.50] Ilan pang pagsubok ang daraanan ko
-[01:36.53] 
-[01:40.05] Bago ako makaranas ng mga milagro Mo?
-[01:48.41] 
-[02:09.95] Oh, ang langit ay nandito lamang pala sa lupa
-[02:18.15] At ang impiyerno ay nasa isipan ko, at pinalimot ng 'Yong ganda
-[02:27.87] Umaawit ang mga anghel, umaawit ang mga anghel
-[02:37.17] Nagdiriwang sila nang makasama Kita, huwag Ka sanang mawawala
-[02:45.64] Oh, oh, oh, oh
-[02:52.07] Oh, ooh
-[03:03.27] Mamamatay akong nakangiti
-[03:07.58] Kapag Ikaw ang nasa aking tabi
-[03:11.93] Mabubuhay akong nagsisisi
-[03:16.33] Kapag 'sang araw hindi Kita mapangiti
-[03:20.78] Kalapastangan ang 'di Ka ibigin
-[03:25.36] Kalokohan ang 'di Ka isipin
-[03:29.72] Kung ang mundo ay biglang gugunawin
-[03:34.17] Ikaw ang una kong hahanapin
-[03:39.02] Ooh
-[03:45.63] 
-[03:48.76] Ooh
-[03:52.50] `,
+    shelter: {
+        metadata: {"artist": "Porter Robinson", "title": "Shelter", "album": "Worlds", "year": 2016, "musicbrainz_id": null},
+        lyrics: `[00:38.75] I could never find the right way to tell you
+[00:43.55] Have you noticed I've been gone?
+[00:47.39] 'Cause I left behind the home that you made me
+[00:52.94] But I will carry it along
+[00:56.42] And it's a long way forward, so trust in me
+[01:02.10] I'll give them shelter, like you've done for me
+[01:06.55] And I know, I'm not alone, you'll be watching over us
+[01:12.63] Until you're gone
+[01:56.23] When I'm older, I'll be silent beside you
+[02:00.55] I know words won't be enough
+[02:05.18] And they won't need to know the names on our faces
+[02:10.15] But they will carry on for us
+[02:13.78] And it's a long way forward, so trust in me
+[02:19.35] I'll give them shelter, like you've done for me
+[02:23.14] And I know, I'm not alone, you'll be watching over us
+[02:29.29] Until you're gone
+[03:11.20] Oh it's a long way forward, trust in me
+[03:16.26] I'll give them shelter, like you've done for me
+[03:20.54] And I know, I'm not alone, you'll be watching over us
+[03:26.91] Until
+`,
         images: [
-            { src: "assets/images/kalapastangan/img_000.jpg", prompt: "Oras nang sambahin ang ngalan Mo" },
-            { src: "assets/images/kalapastangan/img_001.jpg", prompt: "[Instrumental Interlude]" },
-            { src: "assets/images/kalapastangan/img_002.jpg", prompt: "Para mabuhay habang-buhay sa puso't isipan Mo" },
-            { src: "assets/images/kalapastangan/img_003.jpg", prompt: "[Instrumental Interlude]" },
-            { src: "assets/images/kalapastangan/img_004.jpg", prompt: "Sino ba ako para mapansin Mo?" },
-            { src: "assets/images/kalapastangan/img_005.jpg", prompt: "Mga dalangin ko sa 'Yo, sana'y pakinggan Mo" },
-            { src: "assets/images/kalapastangan/img_006.jpg", prompt: "[Instrumental Guitar Solo]" },
-            { src: "assets/images/kalapastangan/img_007.jpg", prompt: "Pa'no ba ako magiging 'sang santo" },
-            { src: "assets/images/kalapastangan/img_008.jpg", prompt: "[Instrumental Break]" },
-            { src: "assets/images/kalapastangan/img_009.jpg", prompt: "Para makasama Kita diyan sa tabi ng trono Mo?" },
-            { src: "assets/images/kalapastangan/img_010.jpg", prompt: "[Instrumental Break]" },
-            { src: "assets/images/kalapastangan/img_011.jpg", prompt: "Ilan pang pagsubok ang daraanan ko" },
-            { src: "assets/images/kalapastangan/img_012.jpg", prompt: "[Instrumental Interlude]" },
-            { src: "assets/images/kalapastangan/img_013.jpg", prompt: "Bago ako makaranas ng mga milagro Mo?" },
-            { src: "assets/images/kalapastangan/img_014.jpg", prompt: "[Instrumental Guitar Solo]" },
-            { src: "assets/images/kalapastangan/img_015.jpg", prompt: "Oh, ang langit ay nandito lamang pala sa lupa" },
-            { src: "assets/images/kalapastangan/img_016.jpg", prompt: "At ang impiyerno ay nasa isipan ko, at pinalimot ng 'Yong ganda" },
-            { src: "assets/images/kalapastangan/img_017.jpg", prompt: "Umaawit ang mga anghel, umaawit ang mga anghel" },
-            { src: "assets/images/kalapastangan/img_018.jpg", prompt: "Nagdiriwang sila nang makasama Kita, huwag Ka sanang mawawala" },
-            { src: "assets/images/kalapastangan/img_019.jpg", prompt: "Oh, oh, oh, oh" },
-            { src: "assets/images/kalapastangan/img_020.jpg", prompt: "Oh, ooh" },
-            { src: "assets/images/kalapastangan/img_021.jpg", prompt: "Mamamatay akong nakangiti" },
-            { src: "assets/images/kalapastangan/img_022.jpg", prompt: "Kapag Ikaw ang nasa aking tabi" },
-            { src: "assets/images/kalapastangan/img_023.jpg", prompt: "Mabubuhay akong nagsisisi" },
-            { src: "assets/images/kalapastangan/img_024.jpg", prompt: "Kapag 'sang araw hindi Kita mapangiti" },
-            { src: "assets/images/kalapastangan/img_025.jpg", prompt: "Kalapastangan ang 'di Ka ibigin" },
-            { src: "assets/images/kalapastangan/img_026.jpg", prompt: "Kalokohan ang 'di Ka isipin" },
-            { src: "assets/images/kalapastangan/img_027.jpg", prompt: "Kung ang mundo ay biglang gugunawin" },
-            { src: "assets/images/kalapastangan/img_028.jpg", prompt: "Ikaw ang una kong hahanapin" },
-            { src: "assets/images/kalapastangan/img_029.jpg", prompt: "Ooh" },
-            { src: "assets/images/kalapastangan/img_030.jpg", prompt: "[Instrumental Solo]" },
-            { src: "assets/images/kalapastangan/img_031.jpg", prompt: "Ooh" },
-            { src: "assets/images/kalapastangan/img_032.jpg", prompt: "[Instrumental Outro]" }
+            { src: "assets/images/shelter/img_000.jpg", prompt: "empty mailbox" },
+            { src: "assets/images/shelter/img_001.jpg", prompt: "empty chair" },
+            { src: "assets/images/shelter/img_002.jpg", prompt: "abandoned house" },
+            { src: "assets/images/shelter/img_003.jpg", prompt: "person with suitcase" },
+            { src: "assets/images/shelter/img_004.jpg", prompt: "endless road" },
+            { src: "assets/images/shelter/img_005.jpg", prompt: "open doorway" },
+            { src: "assets/images/shelter/img_006.jpg", prompt: "guardian angel silhouette" },
+            { src: "assets/images/shelter/img_007.jpg", prompt: "fading photograph" },
+            { src: "assets/images/shelter/img_008.jpg", prompt: "elderly hand holding" },
+            { src: "assets/images/shelter/img_009.jpg", prompt: "unwritten letter" },
+            { src: "assets/images/shelter/img_010.jpg", prompt: "crowded street" },
+            { src: "assets/images/shelter/img_011.jpg", prompt: "passing torch" },
+            { src: "assets/images/shelter/img_012.jpg", prompt: "open road sunrise" },
+            { src: "assets/images/shelter/img_013.jpg", prompt: "protective dome" },
+            { src: "assets/images/shelter/img_015.jpg", prompt: "empty chair" },
+            { src: "assets/images/shelter/img_016.jpg", prompt: "endless highway" },
+            { src: "assets/images/shelter/img_017.jpg", prompt: "protective dome" },
+            { src: "assets/images/shelter/img_019.jpg", prompt: "fading horizon" }
         ],
-        videoSrc: "assets/videos/kalapastangan.mp4?v=20"
+        videoSrc: "assets/videos/shelter.mp4?v=22"
     }
 };
 

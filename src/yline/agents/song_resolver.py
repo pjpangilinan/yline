@@ -21,9 +21,10 @@ logger = logging.getLogger(__name__)
 SYSTEM_PROMPT = """You are a music expert agent. Your job is to resolve a user's song query to exact metadata.
 
 Instructions:
-1. Call search_music to look up recordings on MusicBrainz.
-2. When query results are returned, call return_song with the artist, title, album, and release year.
-3. Call the tools directly without extra conversational text.
+1. Call search_music to look up recordings on MusicBrainz. Pass 'query', and optionally 'artist' and 'title' if recognized.
+2. When query results are returned, select the best matching recording and call return_song with the artist, title, album, and release year.
+3. If search_music results are ambiguous or after searching, call return_song with the known artist, title, album, and year. Never fail to call return_song.
+4. Call the tools directly without extra conversational text.
 """
 
 TOOL_MAP = {
@@ -138,6 +139,32 @@ async def song_resolver_node(state: PipelineState) -> dict[str, Any]:
                 messages.append(
                     HumanMessage(content="Please use the search_music tool to find the song, or return_song if you found it.")
                 )
+
+    # Fallback: if search iterations exhausted, prompt LLM to return best known metadata
+    try:
+        await rate_limiter.acquire(estimated_tokens=200)
+        fallback_res = await llm.ainvoke(
+            messages + [HumanMessage(content=f"Now call return_song directly with the known artist and title for: {query}")],
+            tools=[RETURN_SONG_TOOL],
+        )
+        if fallback_res.tool_calls:
+            for tc in fallback_res.tool_calls:
+                if tc["name"] == "return_song":
+                    args = tc["args"]
+                    logger.info(f"Resolved from fallback: {args.get('artist')} - {args.get('title')}")
+                    metadata = SongMetadata(
+                        artist=args.get("artist", "Unknown"),
+                        title=args.get("title", "Unknown"),
+                        album=args.get("album"),
+                        year=args.get("year"),
+                        musicbrainz_id=args.get("musicbrainz_id")
+                    )
+                    return {
+                        "song_metadata": metadata.model_dump(),
+                        "retry_counts": retry_counts,
+                    }
+    except Exception as e:
+        logger.debug(f"Fallback resolution failed: {e}")
 
     errors.append(f"Could not resolve song: {query}")
     retry_counts["song_resolver"] = retry_counts.get("song_resolver", 0) + 1

@@ -230,21 +230,45 @@ def assemble_video(
         logger.info(f"Rendering {len(timeline)} video slides with Pillow...")
         slide_cache: dict[tuple[str | None, str], str] = {}
 
+        for idx, (img_p, text, duration) in enumerate(timeline):
+            cache_key = (img_p, text)
+            if cache_key not in slide_cache:
+                slide_path = os.path.join(temp_dir, f"slide_{len(slide_cache):04d}.jpg")
+                _render_slide(img_p, text, slide_path, resolution=resolution)
+                slide_cache[cache_key] = slide_path
+
+        # Split-CFR implementation to prevent Windows concat demuxer frame drops
+        batch_size = 20
+        parts = []
+        for i in range(0, len(timeline), batch_size):
+            batch = timeline[i : i + batch_size]
+            part_cmd = [ffmpeg, "-y"]
+            filter_complex = []
+            concat_inputs = ""
+            for local_i, (img_p, text, duration) in enumerate(batch):
+                slide_path = slide_cache[(img_p, text)]
+                part_cmd.extend(["-loop", "1", "-t", str(duration), "-i", slide_path])
+                # Ensure each image is strictly 24fps before concat
+                filter_complex.append(f"[{local_i}:v]fps=24[v{local_i}]")
+                concat_inputs += f"[v{local_i}]"
+            
+            filter_complex.append(f"{concat_inputs}concat=n={len(batch)}:v=1:a=0[vout]")
+            part_path = os.path.join(temp_dir, f"part_{i}.mp4")
+            part_cmd.extend([
+                "-filter_complex", ";".join(filter_complex),
+                "-map", "[vout]",
+                "-c:v", "libx264", "-preset", "ultrafast", "-pix_fmt", "yuv420p",
+                part_path
+            ])
+            logger.info(f"Rendering batch {i//batch_size + 1} ({len(batch)} slides)...")
+            subprocess.run(part_cmd, capture_output=True, check=True)
+            parts.append(part_path)
+
+        concat_file = os.path.join(temp_dir, "concat.txt")
         with open(concat_file, "w", encoding="utf-8") as f:
-            for idx, (img_p, text, duration) in enumerate(timeline):
-                cache_key = (img_p, text)
-                if cache_key not in slide_cache:
-                    slide_path = os.path.join(temp_dir, f"slide_{len(slide_cache):04d}.jpg")
-                    _render_slide(img_p, text, slide_path, resolution=resolution)
-                    slide_cache[cache_key] = slide_path
-
-                slide_file = slide_cache[cache_key]
-                clean_p = os.path.abspath(slide_file).replace("\\", "/")
-                f.write(f"file '{clean_p}'\nduration {duration:.4f}\n")
-
-            # In FFmpeg concat demuxer, the last file must be repeated to set duration
-            last_file = os.path.abspath(slide_cache[timeline[-1][0], timeline[-1][1]]).replace("\\", "/")
-            f.write(f"file '{last_file}'\n")
+            for p in parts:
+                clean_p = os.path.abspath(p).replace("\\", "/")
+                f.write(f"file '{clean_p}'\n")
 
         total_duration = sum(item[2] for item in timeline)
         os.makedirs(os.path.dirname(os.path.abspath(output_path)), exist_ok=True)
@@ -273,8 +297,6 @@ def assemble_video(
             if has_audio:
                 cmd.extend(["-c:a", "aac", "-b:a", "192k", "-shortest"])
             cmd.extend([
-                "-r", "24",
-                "-vsync", "cfr",
                 "-movflags", "+faststart",
                 os.path.abspath(output_path),
             ])

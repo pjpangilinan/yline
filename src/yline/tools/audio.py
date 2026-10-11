@@ -3,6 +3,7 @@ from langsmith import traceable
 
 import asyncio
 import os
+import re
 import yt_dlp
 import logging
 import imageio_ffmpeg
@@ -14,6 +15,8 @@ async def download_audio(
     query: str,
     output_dir: str,
     target_duration_sec: float | None = None,
+    expected_title: str | None = None,
+    expected_artist: str | None = None,
 ) -> str | None:
     """Download studio audio from YouTube using yt-dlp.
 
@@ -88,6 +91,12 @@ async def download_audio(
             altered_keywords = ['remix', 'slowed', 'reverb', 'speed up', 'nightcore', 'instrumental', 'karaoke', 'cover']
             if any(k in title for k in altered_keywords):
                 penalty += 150.0
+
+            # Penalty if candidate title doesn't match the expected song title
+            if expected_title:
+                clean_title_words = [w.lower() for w in re.findall(r'[a-zA-Z0-9]+', expected_title) if len(w) >= 3]
+                if clean_title_words and not any(w in title for w in clean_title_words):
+                    penalty += 400.0
 
             # Bonus for studio/official tags
             if 'official audio' in title or 'lyric' in title or 'audio' in title or 'topic' in uploader:
