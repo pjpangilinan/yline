@@ -51,8 +51,9 @@ async def download_audio(
     loop = asyncio.get_running_loop()
 
     def _sync_find_and_download() -> str | None:
-        # Search for candidates
+        # Search across all query variants and deduplicate candidates by video ID
         candidates = []
+        seen_ids = set()
         search_terms = [
             f"{query} official audio",
             f"{query} lyric video",
@@ -64,16 +65,17 @@ async def download_audio(
                 try:
                     res = ydl.extract_info(f"ytsearch5:{st}", download=False)
                     if res and 'entries' in res:
-                        candidates.extend(res['entries'])
+                        for entry in res['entries']:
+                            if entry and entry.get('id') and entry.get('id') not in seen_ids:
+                                seen_ids.add(entry.get('id'))
+                                candidates.append(entry)
                 except Exception as e:
                     logger.debug(f"Search failed for '{st}': {e}")
-                if len(candidates) >= 5:
-                    break
 
         if not candidates:
             return None
 
-        # Score and rank candidates: penalize live/concert/remix/slowed
+        # Score and rank candidates: penalize live/concert/remix/slowed/demo/unreleased
         best_entry = None
         best_score = float('inf')
 
@@ -82,13 +84,25 @@ async def download_audio(
             uploader = (entry.get('uploader') or entry.get('channel') or '').lower()
             dur = entry.get('duration') or 0
 
-            # Penalty for live or altered versions
             penalty = 0.0
+
+            # Heavy penalty for demo, work in progress, early bounce, unreleased, leaks
+            demo_keywords = [
+                'demo', 'early demo', 'unreleased', 'leak', 'snippet',
+                'work in progress', 'wip', 'acoustic demo', 'rough mix', 'scratch vocal'
+            ]
+            if any(k in title for k in demo_keywords):
+                penalty += 250.0
+
+            # Penalty for live or altered versions
             live_keywords = ['live', 'concert', 'festival', 'tour', 'acoustic live', 'live at', 'session']
             if any(k in title for k in live_keywords):
                 penalty += 150.0
 
-            altered_keywords = ['remix', 'slowed', 'reverb', 'speed up', 'nightcore', 'instrumental', 'karaoke', 'cover']
+            altered_keywords = [
+                'remix', 'slowed', 'reverb', 'speed up', 'nightcore',
+                'instrumental', 'karaoke', 'cover', 'mashup', 'chopped'
+            ]
             if any(k in title for k in altered_keywords):
                 penalty += 150.0
 
@@ -98,9 +112,23 @@ async def download_audio(
                 if clean_title_words and not any(w in title for w in clean_title_words):
                     penalty += 400.0
 
-            # Bonus for studio/official tags
-            if 'official audio' in title or 'lyric' in title or 'audio' in title or 'topic' in uploader:
-                penalty -= 10.0
+            # Penalty if candidate doesn't match expected artist in title or uploader
+            if expected_artist:
+                clean_artist_words = [w.lower() for w in re.findall(r'[a-zA-Z0-9]+', expected_artist) if len(w) >= 3]
+                if clean_artist_words and not (
+                    any(w in title for w in clean_artist_words) or any(w in uploader for w in clean_artist_words)
+                ):
+                    penalty += 200.0
+
+            # Bonus for official artist/label, topic channels, and studio audio indicators
+            if 'topic' in uploader:
+                penalty -= 30.0
+            if 'official audio' in title or 'official visualizer' in title or 'official video' in title:
+                penalty -= 25.0
+            elif 'lyric' in title:
+                penalty -= 15.0
+            elif 'audio' in title:
+                penalty -= 5.0
 
             # Duration delta if target duration known
             dur_diff = abs(dur - target_duration_sec) if target_duration_sec and dur > 0 else 0.0
