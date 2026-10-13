@@ -69,6 +69,31 @@ def parse_lrc(lrc_text: str) -> list[dict[str, Any]]:
             
     return parsed_lines
 
+def _tokenize(text: str) -> set[str]:
+    """Extract lowercase word tokens from text."""
+    return set(re.findall(r"\w+", text.lower()))
+
+
+def _token_similarity(candidate_text: str, expected_text: str) -> float:
+    """Harmonic F1 similarity between candidate tokens and expected tokens.
+    
+    Naturally rewards exact title matches and penalizes unrequested edition modifiers
+    (e.g. 'Demo', 'Live', 'Remix') without needing static keyword blacklists.
+    """
+    c_tokens = _tokenize(candidate_text)
+    e_tokens = _tokenize(expected_text)
+    if not e_tokens:
+        return 1.0 if not c_tokens else 0.0
+    if not c_tokens:
+        return 0.0
+    overlap = len(c_tokens.intersection(e_tokens))
+    if overlap == 0:
+        return 0.0
+    precision = overlap / len(c_tokens)
+    recall = overlap / len(e_tokens)
+    return 2.0 * (precision * recall) / (precision + recall)
+
+
 @traceable
 async def fetch_synced_lyrics(
     artist: str,
@@ -103,80 +128,33 @@ async def fetch_synced_lyrics(
                     if results:
                         valid_tracks = [t for t in results if t.get("syncedLyrics")]
                         if valid_tracks:
-                            clean_t = title.lower().strip()
-                            clean_a = artist.lower().strip()
-                            clean_alb = album.lower().strip() if album else ""
+                            def track_rank(t: dict) -> float:
+                                t_name = t.get("trackName", "").strip()
+                                a_name = t.get("artistName", "").strip()
+                                alb_name = t.get("albumName", "").strip()
+                                dur = float(t.get("duration") or 0.0)
 
-                            unwanted_keywords = [
-                                "demo", "demos", "early demo", "work in progress", "wip",
-                                "unreleased", "live", "acoustic", "instrumental", "karaoke",
-                                "remix", "cover", "preview", "snippet"
-                            ]
+                                title_score = _token_similarity(t_name, title)
+                                artist_score = _token_similarity(a_name, artist)
+                                album_score = _token_similarity(alb_name, album) if album else 1.0
 
-                            def track_rank(t: dict) -> tuple[float, float]:
-                                t_name = t.get("trackName", "").lower().strip()
-                                a_name = t.get("artistName", "").lower().strip()
-                                alb_name = t.get("albumName", "").lower().strip()
-                                dur = float(t.get("duration") or 210.0)
-
-                                penalty = 0.0
-
-                                # Penalize instrumental flag
-                                if t.get("instrumental") is True:
-                                    penalty += 100.0
-
-                                # Penalize unwanted keywords (demo, live, acoustic, etc.) unless requested
-                                for kw in unwanted_keywords:
-                                    if kw in t_name and kw not in clean_t:
-                                        penalty += 55.0
-                                    if kw in alb_name and kw not in clean_alb:
-                                        penalty += 45.0
-
-                                # Exact / substring title match
-                                if t_name == clean_t:
-                                    penalty -= 50.0
-                                elif clean_t in t_name or t_name in clean_t:
-                                    penalty -= 25.0
+                                if target_duration_sec and target_duration_sec > 0 and dur > 0:
+                                    rel_err = abs(dur - target_duration_sec) / target_duration_sec
+                                    dur_score = max(0.0, 1.0 - rel_err * 2.0)
                                 else:
-                                    penalty += 40.0
+                                    dur_score = 1.0 if (60.0 <= dur <= 600.0) else 0.4
 
-                                # Artist match
-                                if clean_a == a_name:
-                                    penalty -= 40.0
-                                elif clean_a in a_name or a_name in clean_a:
-                                    penalty -= 25.0
-                                elif any(w in a_name for w in clean_a.split() if len(w) > 3):
-                                    penalty -= 15.0
-                                else:
-                                    penalty += 35.0
+                                inst_penalty = 1.0 if t.get("instrumental") is True else 0.0
 
-                                # Album match bonus
-                                if clean_alb and clean_alb in alb_name:
-                                    penalty -= 20.0
+                                return (
+                                    0.45 * title_score +
+                                    0.25 * dur_score +
+                                    0.20 * artist_score +
+                                    0.10 * album_score -
+                                    inst_penalty
+                                )
 
-                                # Duration scoring
-                                if target_duration_sec is not None and target_duration_sec > 0:
-                                    dur_diff = abs(dur - target_duration_sec)
-                                    if dur_diff <= 3.0:
-                                        penalty -= 35.0
-                                    elif dur_diff <= 8.0:
-                                        penalty -= 20.0
-                                    elif dur_diff > 30.0:
-                                        penalty += 35.0
-                                    dur_dist = dur_diff
-                                else:
-                                    # Sensible default commercial song range: 75s to 480s
-                                    if dur < 45.0:
-                                        penalty += 80.0
-                                    elif dur < 75.0:
-                                        penalty += 40.0
-                                    elif dur > 600.0:
-                                        penalty += 40.0
-                                    dur_dist = abs(dur - 215.0)
-
-                                return (penalty, dur_dist)
-
-                            best_track = min(valid_tracks, key=track_rank)
+                            best_track = max(valid_tracks, key=track_rank)
                             return parse_lrc(best_track["syncedLyrics"])
                     return None
                 elif res.status_code == 429:

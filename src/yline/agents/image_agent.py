@@ -41,20 +41,37 @@ Example: For lyrics ["The calendar's hung", "You're a regular decorated emergenc
 # Batch size for LLM calls (process lyrics in chunks to stay within token limits)
 BATCH_SIZE = 10
 
-ATMOSPHERIC_THEMES = [
-    "cinematic landscape sunset",
-    "starry night sky mountains",
-    "serene misty forest morning",
-    "neon city streets rain night",
-    "cozy warm room window aesthetic",
-    "ocean waves cliff golden hour",
-    "autumn road fallen leaves",
-    "vintage film grain architecture",
-    "quiet snowy winter scenery",
-    "peaceful desert dunes dusk",
-    "dreamy clouds pastel sunset",
-    "solitary lighthouse coastal shore",
-]
+
+async def _generate_theme_palette(artist: str, title: str, sample_lyrics: list[str]) -> list[str]:
+    """Dynamically generate a tailored visual search palette matching the song's aesthetic."""
+    await rate_limiter.acquire(estimated_tokens=250)
+    try:
+        llm = ChatGroq(model="openai/gpt-oss-120b", temperature=0.6, max_tokens=250)
+        lyrics_excerpt = " | ".join(sample_lyrics[:6])
+        response = await llm.ainvoke([
+            SystemMessage(content=(
+                "You are a cinematic art director. Generate 6 to 8 diverse, evocative 2-to-3-word physical setting and lighting photography queries "
+                "that capture this song's specific visual world, aesthetic, and mood. Respond strictly with a JSON array of query strings. "
+                "Example: [\"foggy mountain highway\", \"neon rain street\", \"vintage vinyl record\", \"candlelit wooden table\"]"
+            )),
+            HumanMessage(content=f"Song: {artist} - {title}\nLyrics: {lyrics_excerpt}"),
+        ])
+        content = response.content or ""
+        start = content.find("[")
+        end = content.rfind("]") + 1
+        if start >= 0 and end > start:
+            parsed = json.loads(content[start:end])
+            if isinstance(parsed, list) and parsed:
+                return [str(q).strip().strip('"\'') for q in parsed if str(q).strip()]
+    except Exception as e:
+        logger.debug(f"Dynamic theme palette generation failed: {e}")
+
+    return [
+        f"{title} scenery photography",
+        f"{artist} concert visual",
+        f"{title} landscape scenery",
+        f"{artist} aesthetic background",
+    ]
 
 
 async def image_agent_node(state: PipelineState) -> dict[str, Any]:
@@ -85,7 +102,11 @@ async def image_agent_node(state: PipelineState) -> dict[str, Any]:
     # Step 1: Generate search queries for all lyrics using LLM
     all_queries = await _generate_search_queries(lyrics, artist, title)
 
-    # Step 2: Concurrently download unique images for each query
+    # Step 2: Dynamically generate song-specific visual theme palette
+    sample_texts = [line.get("text", "") for line in lyrics if line.get("text")]
+    theme_palette = await _generate_theme_palette(artist, title, sample_texts)
+
+    # Step 3: Concurrently download unique images for each query
     # Concurrency bounded to 2 to respect Wikimedia / Bing rate limit policies
     concurrency_sem = asyncio.Semaphore(2)
     seen_hashes: set[str] = set()
@@ -98,9 +119,8 @@ async def image_agent_node(state: PipelineState) -> dict[str, Any]:
             candidate_queries = [
                 query,
                 _clean_fallback_query(lyric_text, title),
-                f"{title} landscape scenery",
-                ATMOSPHERIC_THEMES[i % len(ATMOSPHERIC_THEMES)],
-                f"cinematic nature background {i + 1}",
+                theme_palette[i % len(theme_palette)],
+                f"{artist} {title} photography",
             ]
 
             for tier_idx, q in enumerate(candidate_queries):

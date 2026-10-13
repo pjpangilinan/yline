@@ -10,6 +10,28 @@ import imageio_ffmpeg
 
 logger = logging.getLogger(__name__)
 
+
+def _tokenize(text: str) -> set[str]:
+    """Extract lowercase word tokens from text."""
+    return set(re.findall(r"\w+", text.lower()))
+
+
+def _token_similarity(candidate_text: str, expected_text: str) -> float:
+    """Harmonic F1 similarity between candidate tokens and expected tokens."""
+    c_tokens = _tokenize(candidate_text)
+    e_tokens = _tokenize(expected_text)
+    if not e_tokens:
+        return 1.0 if not c_tokens else 0.0
+    if not c_tokens:
+        return 0.0
+    overlap = len(c_tokens.intersection(e_tokens))
+    if overlap == 0:
+        return 0.0
+    precision = overlap / len(c_tokens)
+    recall = overlap / len(e_tokens)
+    return 2.0 * (precision * recall) / (precision + recall)
+
+
 @traceable
 async def download_audio(
     query: str,
@@ -75,77 +97,52 @@ async def download_audio(
         if not candidates:
             return None
 
-        # Score and rank candidates: penalize live/concert/remix/slowed/demo/unreleased
-        best_entry = None
-        best_score = float('inf')
+        # Principled semantic evaluation of candidates
+        def score_candidate(entry: dict) -> float:
+            c_title = entry.get('title', '')
+            c_uploader = (entry.get('uploader') or entry.get('channel') or '')
+            dur = float(entry.get('duration') or 0.0)
 
-        for entry in candidates:
-            title = entry.get('title', '').lower()
-            uploader = (entry.get('uploader') or entry.get('channel') or '').lower()
-            dur = entry.get('duration') or 0
+            # 1. Title fidelity: Token F1 against expected song title
+            title_score = _token_similarity(c_title, expected_title) if expected_title else 0.8
 
-            penalty = 0.0
-
-            # Heavy penalty for demo, work in progress, early bounce, unreleased, leaks
-            demo_keywords = [
-                'demo', 'early demo', 'unreleased', 'leak', 'snippet',
-                'work in progress', 'wip', 'acoustic demo', 'rough mix', 'scratch vocal'
-            ]
-            if any(k in title for k in demo_keywords):
-                penalty += 250.0
-
-            # Penalty for live or altered versions
-            live_keywords = ['live', 'concert', 'festival', 'tour', 'acoustic live', 'live at', 'session']
-            if any(k in title for k in live_keywords):
-                penalty += 150.0
-
-            altered_keywords = [
-                'remix', 'slowed', 'reverb', 'speed up', 'nightcore',
-                'instrumental', 'karaoke', 'cover', 'mashup', 'chopped'
-            ]
-            if any(k in title for k in altered_keywords):
-                penalty += 150.0
-
-            # Penalty if candidate title doesn't match the expected song title
-            if expected_title:
-                clean_title_words = [w.lower() for w in re.findall(r'[a-zA-Z0-9]+', expected_title) if len(w) >= 3]
-                if clean_title_words and not any(w in title for w in clean_title_words):
-                    penalty += 400.0
-
-            # Penalty if candidate doesn't match expected artist in title or uploader
+            # 2. Artist/Uploader alignment
             if expected_artist:
-                clean_artist_words = [w.lower() for w in re.findall(r'[a-zA-Z0-9]+', expected_artist) if len(w) >= 3]
-                if clean_artist_words and not (
-                    any(w in title for w in clean_artist_words) or any(w in uploader for w in clean_artist_words)
-                ):
-                    penalty += 200.0
+                artist_in_uploader = _token_similarity(c_uploader, expected_artist)
+                artist_in_title = _token_similarity(c_title, expected_artist)
+                artist_score = max(artist_in_uploader, artist_in_title)
+            else:
+                artist_score = 0.8
 
-            # Bonus for official artist/label, topic channels, and studio audio indicators
-            if 'topic' in uploader:
-                penalty -= 30.0
-            if 'official audio' in title or 'official visualizer' in title or 'official video' in title:
-                penalty -= 25.0
-            elif 'lyric' in title:
-                penalty -= 15.0
-            elif 'audio' in title:
-                penalty -= 5.0
+            # 3. Official release channel credibility
+            u_clean = c_uploader.lower()
+            is_official_channel = (
+                u_clean.endswith("- topic") or
+                "vevo" in u_clean or
+                (expected_artist and _tokenize(expected_artist).issubset(_tokenize(c_uploader)))
+            )
+            official_score = 1.0 if is_official_channel else 0.5
 
-            # Duration delta if target duration known
-            dur_diff = abs(dur - target_duration_sec) if target_duration_sec and dur > 0 else 0.0
-            # If duration is wildly off (>45s mismatch), heavy penalty
-            if target_duration_sec and dur > 0 and abs(dur - target_duration_sec) > 45:
-                penalty += 100.0
+            # 4. Duration alignment (relative error)
+            if target_duration_sec and target_duration_sec > 0 and dur > 0:
+                rel_err = abs(dur - target_duration_sec) / target_duration_sec
+                dur_score = max(0.0, 1.0 - rel_err * 3.0)
+            else:
+                dur_score = 0.8
 
-            score = penalty + dur_diff
-            if score < best_score:
-                best_score = score
-                best_entry = entry
+            # Composite normalized match score in [0.0, 1.0]
+            return (
+                0.40 * title_score +
+                0.35 * dur_score +
+                0.15 * artist_score +
+                0.10 * official_score
+            )
 
-        if not best_entry:
-            best_entry = candidates[0]
+        best_entry = max(candidates, key=score_candidate)
+        best_score = score_candidate(best_entry)
 
         target_url = best_entry.get('url') or best_entry.get('webpage_url') or best_entry.get('id')
-        logger.info(f"Selected audio candidate: {best_entry.get('title')} (score: {best_score:.1f})")
+        logger.info(f"Selected audio candidate: {best_entry.get('title')} (score: {best_score:.2f})")
 
         # Download the best candidate
         try:

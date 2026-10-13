@@ -146,18 +146,9 @@ async def _search_ddg(query: str, max_results: int = 15) -> list[str]:
 # Wikimedia SSL context using certifi bundle
 _ssl_context = ssl.create_default_context(cafile=certifi.where())
 
-# Titles/categories on Wikimedia that are unsuitable for lyric video backgrounds
-WIKIMEDIA_EXCLUDE_TERMS = [
-    "flag of", "coat of arms", "icon", "symbol", "map", "diagram", "chart",
-    "logo", "screenshot", "signature", "seal of", "currency", "coin",
-    "stamp", "postage", "scan", "manuscript", "plate", "textbook",
-    "specimen", "document", "newspaper", "table", "graph"
-]
-
-
 @traceable
 async def _search_wikimedia(query: str, max_results: int = 5) -> list[str]:
-    """Search Wikimedia Commons for high-resolution, relevant public domain photos."""
+    """Search Wikimedia Commons for high-resolution, landscape-oriented public domain photos."""
     for attempt in range(2):
         try:
             await _image_rate_limiter.wait("wikimedia.org")
@@ -165,8 +156,8 @@ async def _search_wikimedia(query: str, max_results: int = 5) -> list[str]:
                 "action": "query",
                 "generator": "search",
                 "gsrnamespace": "6",  # File namespace
-                "gsrsearch": query,
-                "gsrlimit": str(min(max_results + 2, 8)),
+                "gsrsearch": f"{query} photo",
+                "gsrlimit": str(min(max_results + 3, 10)),
                 "prop": "imageinfo",
                 "iiprop": "url|size|mime",
                 "format": "json",
@@ -192,12 +183,11 @@ async def _search_wikimedia(query: str, max_results: int = 5) -> list[str]:
                         mime = info.get("mime", "")
                         if mime not in ["image/jpeg", "image/png", "image/webp"]:
                             continue
-                        title = v.get("title", "").lower()
-                        if any(term in title for term in WIKIMEDIA_EXCLUDE_TERMS):
-                            continue
                         w = info.get("width", 0)
                         h = info.get("height", 0)
-                        if w < 500 or h < 400:
+                        # Require landscape aspect ratio suitable for 16:9 video slides.
+                        # Naturally filters out portrait book pages, stamps, vertical cards, and coins by geometry.
+                        if w < 800 or h < 450 or (w / max(1, h)) < 1.15:
                             continue
                         url = info.get("url")
                         if url and not is_stock_url(url):
