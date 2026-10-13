@@ -93,11 +93,15 @@ async def search_music(
             except (ValueError, IndexError):
                 pass
 
+        length_ms = rec.get("length")
+        duration_sec = round(length_ms / 1000.0, 1) if length_ms else None
+
         results.append({
             "artist": artist_name,
             "title": rec_title,
             "album": album,
             "year": year,
+            "duration_sec": duration_sec,
             "musicbrainz_id": rec.get("id"),
         })
 

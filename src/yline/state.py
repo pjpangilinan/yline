@@ -24,6 +24,9 @@ class SongMetadata(BaseModel):
     title: str = Field(description="Song or recording title")
     album: str | None = Field(default=None, description="Album or release title")
     year: int | None = Field(default=None, description="Release year")
+    duration_sec: float | None = Field(
+        default=None, description="Duration of track in seconds if known"
+    )
     musicbrainz_id: str | None = Field(
         default=None, description="MusicBrainz recording identifier UUID"
     )

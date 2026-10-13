@@ -82,5 +82,56 @@ class TestPipelineRemediation(unittest.IsolatedAsyncioTestCase):
             if os.path.exists("output/test_dedup"):
                 os.rmdir("output/test_dedup")
 
+    @patch("httpx.AsyncClient.get")
+    async def test_fetch_synced_lyrics_penalizes_demo_and_matches_duration(self, mock_get):
+        from unittest.mock import MagicMock
+        from yline.tools.lyrics import fetch_synced_lyrics
+        
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = [
+            {
+                "id": 1,
+                "trackName": "Yoshi's Island 30 (Demo)",
+                "artistName": "glass beach",
+                "albumName": "the first glass beach album demos",
+                "duration": 380.0,
+                "syncedLyrics": "[00:01.00] Demo line",
+            },
+            {
+                "id": 2,
+                "trackName": "yoshi's island",
+                "artistName": "glass beach",
+                "albumName": "the first glass beach album",
+                "duration": 379.0,
+                "syncedLyrics": "[00:01.00] Studio line",
+            },
+        ]
+        mock_get.return_value = mock_response
+
+        # Target duration 379s, matching studio version
+        lyrics = await fetch_synced_lyrics(
+            artist="glass beach",
+            title="yoshi's island",
+            target_duration_sec=379.0,
+            album="the first glass beach album",
+        )
+        self.assertIsNotNone(lyrics)
+        self.assertEqual(lyrics[0]["text"], "Studio line")
+
+
+    def test_render_slide_with_long_text_and_cleanup(self):
+        import tempfile
+        import os
+        from yline.tools.video import _render_slide
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out_slide = os.path.join(tmpdir, "test_slide.jpg")
+            long_lyric = "This is an extremely long lyric line that definitely exceeds forty six characters in total length"
+            _render_slide(None, long_lyric, out_slide, resolution=(1920, 1080))
+            self.assertTrue(os.path.isfile(out_slide))
+            self.assertGreater(os.path.getsize(out_slide), 1000)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -57,11 +57,18 @@ async def lyrics_agent_node(state: PipelineState) -> dict[str, Any]:
 
     artist = metadata["artist"]
     title = metadata["title"]
-    logger.info(f"Fetching lyrics for: {artist} - {title}")
+    album = metadata.get("album")
+    target_duration_sec = metadata.get("duration_sec")
+    logger.info(f"Fetching lyrics for: {artist} - {title} (target dur: {target_duration_sec}s)")
 
     # Step 1: Try LRCLIB for synced lyrics (no LLM needed for this)
     try:
-        synced = await fetch_synced_lyrics(artist, title)
+        synced = await fetch_synced_lyrics(
+            artist,
+            title,
+            target_duration_sec=target_duration_sec,
+            album=album,
+        )
         if synced:
             # Filter out empty lines
             lyrics = [line for line in synced if line["text"].strip()]
@@ -82,7 +89,8 @@ async def lyrics_agent_node(state: PipelineState) -> dict[str, Any]:
         plain = await loop.run_in_executor(None, fetch_plain_lyrics, artist, title)
         if plain:
             logger.info("Got plain lyrics from Genius, estimating timing")
-            lyrics = _estimate_timing(plain)
+            est_ms = int(target_duration_sec * 1000) if target_duration_sec else 210_000
+            lyrics = _estimate_timing(plain, total_duration_ms=est_ms)
             return {"lyrics": lyrics}
     except Exception as e:
         logger.warning(f"Genius fetch failed: {e}")
@@ -110,7 +118,12 @@ async def lyrics_agent_node(state: PipelineState) -> dict[str, Any]:
                 alternatives = json.loads(content[start:end])
                 for alt in alternatives:
                     try:
-                        synced = await fetch_synced_lyrics(alt["artist"], alt["title"])
+                        synced = await fetch_synced_lyrics(
+                            alt["artist"],
+                            alt["title"],
+                            target_duration_sec=target_duration_sec,
+                            album=album,
+                        )
                         if synced:
                             lyrics = [l for l in synced if l["text"].strip()]
                             logger.info(f"Found lyrics via alternative: {alt['artist']} - {alt['title']}")

@@ -71,6 +71,7 @@ async def song_resolver_node(state: PipelineState) -> dict[str, Any]:
                     "title": {"type": "string"},
                     "album": {"type": "string"},
                     "year": {"type": "integer"},
+                    "duration_sec": {"type": "number"},
                     "musicbrainz_id": {"type": "string"}
                 },
                 "required": ["artist", "title"]
@@ -112,6 +113,7 @@ async def song_resolver_node(state: PipelineState) -> dict[str, Any]:
                         title=func_args.get("title", "Unknown"),
                         album=func_args.get("album"),
                         year=func_args.get("year"),
+                        duration_sec=func_args.get("duration_sec"),
                         musicbrainz_id=func_args.get("musicbrainz_id")
                     )
                     return {
@@ -157,6 +159,7 @@ async def song_resolver_node(state: PipelineState) -> dict[str, Any]:
                         title=args.get("title", "Unknown"),
                         album=args.get("album"),
                         year=args.get("year"),
+                        duration_sec=args.get("duration_sec"),
                         musicbrainz_id=args.get("musicbrainz_id")
                     )
                     return {

@@ -47,36 +47,42 @@ def parse_lrc(lrc_text: str) -> list[dict[str, Any]]:
                 })
             
     # Calculate end_ms:
-    # 1. Allow the lyric to display for the duration of the vocal line based on word count.
-    #    Singing speed is typically ~300-450ms per word. We grant at least (word_count * 400ms + 1200ms)
-    #    with a healthy minimum of 4.0s (capped at 8.0s).
-    # 2. If the gap to the next line is a normal pause (<= 7.0s), hold the subtitle continuously
-    #    until the next line begins to keep the screen engaging and readable without premature disappearances.
-    # 3. If there is a long instrumental break (> 7.0s, e.g. guitar solo / bridge), display the lyric
-    #    for its natural duration (or up to 6.5s) and leave the rest as clean instrumental gap.
+    # 1. Estimate natural vocal duration based on word count (~400ms/word + 1500ms baseline padding).
+    #    Bounded between 3000ms (3.0s minimum read time) and 6500ms.
+    # 2. For natural vocal pauses (gap <= 5500ms), hold the subtitle continuously until the next line starts.
+    # 3. For long instrumental breaks (> 5500ms, e.g. guitar solo / bridge), display for natural vocal duration
+    #    and leave the remaining duration as a clean instrumental gap without freezing subtitles.
     for i in range(len(parsed_lines)):
         text_words = len(parsed_lines[i]["text"].split())
-        vocal_duration = text_words * 450 + 1200
+        vocal_duration = max(3000, min(text_words * 400 + 1500, 6500))
         
         if i < len(parsed_lines) - 1:
             next_start = parsed_lines[i + 1]["start_ms"]
-            natural_end = parsed_lines[i]["start_ms"] + vocal_duration
-            if next_start - natural_end > 3000:
-                parsed_lines[i]["end_ms"] = parsed_lines[i]["start_ms"] + min(vocal_duration, 4000)
-            else:
+            gap_to_next = next_start - parsed_lines[i]["start_ms"]
+            if gap_to_next <= 5500:
                 parsed_lines[i]["end_ms"] = next_start
+            else:
+                display_dur = min(vocal_duration, gap_to_next - 2000)
+                parsed_lines[i]["end_ms"] = parsed_lines[i]["start_ms"] + max(2500, display_dur)
         else:
-            parsed_lines[i]["end_ms"] = parsed_lines[i]["start_ms"] + min(vocal_duration, 4000)
+            parsed_lines[i]["end_ms"] = parsed_lines[i]["start_ms"] + vocal_duration
             
     return parsed_lines
 
 @traceable
-async def fetch_synced_lyrics(artist: str, title: str) -> list[dict[str, Any]] | None:
+async def fetch_synced_lyrics(
+    artist: str,
+    title: str,
+    target_duration_sec: float | None = None,
+    album: str | None = None,
+) -> list[dict[str, Any]] | None:
     """Fetch synced lyrics from LRCLIB with retries and timeout.
     
     Args:
         artist: Artist name
         title: Track name
+        target_duration_sec: Optional expected duration in seconds
+        album: Optional expected album name
         
     Returns:
         List of dicts with text, start_ms, end_ms, or None if not found.
@@ -99,35 +105,75 @@ async def fetch_synced_lyrics(artist: str, title: str) -> list[dict[str, Any]] |
                         if valid_tracks:
                             clean_t = title.lower().strip()
                             clean_a = artist.lower().strip()
+                            clean_alb = album.lower().strip() if album else ""
+
+                            unwanted_keywords = [
+                                "demo", "demos", "early demo", "work in progress", "wip",
+                                "unreleased", "live", "acoustic", "instrumental", "karaoke",
+                                "remix", "cover", "preview", "snippet"
+                            ]
 
                             def track_rank(t: dict) -> tuple[float, float]:
                                 t_name = t.get("trackName", "").lower().strip()
                                 a_name = t.get("artistName", "").lower().strip()
+                                alb_name = t.get("albumName", "").lower().strip()
                                 dur = float(t.get("duration") or 210.0)
 
                                 penalty = 0.0
-                                # Exact title match
+
+                                # Penalize instrumental flag
+                                if t.get("instrumental") is True:
+                                    penalty += 100.0
+
+                                # Penalize unwanted keywords (demo, live, acoustic, etc.) unless requested
+                                for kw in unwanted_keywords:
+                                    if kw in t_name and kw not in clean_t:
+                                        penalty += 55.0
+                                    if kw in alb_name and kw not in clean_alb:
+                                        penalty += 45.0
+
+                                # Exact / substring title match
                                 if t_name == clean_t:
                                     penalty -= 50.0
-                                elif clean_t in t_name:
-                                    penalty -= 20.0
+                                elif clean_t in t_name or t_name in clean_t:
+                                    penalty -= 25.0
                                 else:
                                     penalty += 40.0
 
                                 # Artist match
-                                if clean_a in a_name or any(w in a_name for w in clean_a.split() if len(w) > 3):
-                                    penalty -= 30.0
-
-                                # Typical commercial radio single duration (150s - 270s)
-                                if 150 <= dur <= 270:
+                                if clean_a == a_name:
+                                    penalty -= 40.0
+                                elif clean_a in a_name or a_name in clean_a:
                                     penalty -= 25.0
-                                elif dur > 320:
-                                    penalty += 35.0  # Extended / music video audio with long intro
-                                elif dur < 60:
-                                    penalty += 60.0  # Snippet / preview
+                                elif any(w in a_name for w in clean_a.split() if len(w) > 3):
+                                    penalty -= 15.0
+                                else:
+                                    penalty += 35.0
 
-                                # Secondary tie-breaker: closeness to standard 215s pop song
-                                dur_dist = abs(dur - 215.0)
+                                # Album match bonus
+                                if clean_alb and clean_alb in alb_name:
+                                    penalty -= 20.0
+
+                                # Duration scoring
+                                if target_duration_sec is not None and target_duration_sec > 0:
+                                    dur_diff = abs(dur - target_duration_sec)
+                                    if dur_diff <= 3.0:
+                                        penalty -= 35.0
+                                    elif dur_diff <= 8.0:
+                                        penalty -= 20.0
+                                    elif dur_diff > 30.0:
+                                        penalty += 35.0
+                                    dur_dist = dur_diff
+                                else:
+                                    # Sensible default commercial song range: 75s to 480s
+                                    if dur < 45.0:
+                                        penalty += 80.0
+                                    elif dur < 75.0:
+                                        penalty += 40.0
+                                    elif dur > 600.0:
+                                        penalty += 40.0
+                                    dur_dist = abs(dur - 215.0)
+
                                 return (penalty, dur_dist)
 
                             best_track = min(valid_tracks, key=track_rank)

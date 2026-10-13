@@ -149,7 +149,9 @@ _ssl_context = ssl.create_default_context(cafile=certifi.where())
 # Titles/categories on Wikimedia that are unsuitable for lyric video backgrounds
 WIKIMEDIA_EXCLUDE_TERMS = [
     "flag of", "coat of arms", "icon", "symbol", "map", "diagram", "chart",
-    "logo", "screenshot", "signature", "seal of", "currency", "coin"
+    "logo", "screenshot", "signature", "seal of", "currency", "coin",
+    "stamp", "postage", "scan", "manuscript", "plate", "textbook",
+    "specimen", "document", "newspaper", "table", "graph"
 ]
 
 
@@ -267,6 +269,7 @@ async def search_images(query: str, max_results: int = 15) -> list[str]:
     1. First tries Wikimedia Commons (high relevance, curated CC/public domain images).
     2. Then tries Bing Images (with title keyword validation to avoid local filler).
     3. If query fails, simplifies query words and retries.
+    4. Finally falls back to DuckDuckGo images.
     """
     clean_q = " ".join(re.findall(r"[a-zA-Z0-9]+", query))
     if not clean_q:
@@ -293,6 +296,11 @@ async def search_images(query: str, max_results: int = 15) -> list[str]:
         urls = await _search_bing(simplified, max_results=max_results)
         if urls:
             return urls
+
+    # 4. DuckDuckGo fallback
+    urls = await _search_ddg(clean_q, max_results=max_results)
+    if urls:
+        return urls
 
     return []
 

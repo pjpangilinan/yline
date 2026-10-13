@@ -58,11 +58,21 @@ def _render_slide(
 
     # 2. Text Overlay with semi-transparent contrast banner
     if text:
+        import textwrap
+        wrapped_lines = []
+        for line in text.split("\n"):
+            if len(line) > 46:
+                wrapped_lines.append(textwrap.fill(line, width=46))
+            else:
+                wrapped_lines.append(line)
+        display_text = "\n".join(wrapped_lines)
+
         overlay = Image.new("RGBA", (w, h), (0, 0, 0, 0))
         draw_ov = ImageDraw.Draw(overlay)
 
-        # Contrast bar in the vertical center
-        banner_h = 240
+        # Contrast bar in the vertical center scaled to line count
+        num_lines = display_text.count("\n") + 1
+        banner_h = max(240, num_lines * 70 + 80)
         box_top = (h - banner_h) // 2
         box_bottom = box_top + banner_h
         draw_ov.rectangle([0, box_top, w, box_bottom], fill=(0, 0, 0, 155))
@@ -77,7 +87,7 @@ def _render_slide(
         for ox, oy in [(-2, -2), (-2, 2), (2, -2), (2, 2), (0, -2), (0, 2), (-2, 0), (2, 0)]:
             draw_ov.multiline_text(
                 (w // 2 + ox, h // 2 + oy),
-                text,
+                display_text,
                 font=font,
                 fill=(0, 0, 0, 240),
                 anchor="mm",
@@ -86,7 +96,7 @@ def _render_slide(
         # Foreground text
         draw_ov.multiline_text(
             (w // 2, h // 2),
-            text,
+            display_text,
             font=font,
             fill=(255, 255, 255, 255),
             anchor="mm",
@@ -170,7 +180,7 @@ def assemble_video(
         img_p = final_images[i] if i < len(final_images) else (final_images[-1] if final_images else None)
 
         # 2a. If current_time_sec is behind target_start (e.g. instrumental gap), insert gap slide
-        if target_start > current_time_sec + 0.005:
+        if target_start > current_time_sec + 0.05:
             gap_dur = target_start - current_time_sec
             timeline.append((img_p, "", round(gap_dur, 4)))
             current_time_sec = target_start
@@ -183,6 +193,10 @@ def assemble_video(
             # Ensure at least minimal non-negative duration if timestamps overlap
             if line_end <= current_time_sec:
                 line_end = next_start
+
+            # Avoid micro-flicker: if remaining pause to next line is short (< 0.5s), hold subtitle
+            if 0 < (next_start - line_end) < 0.5:
+                line_end = next_start
         else:
             line_end = target_end
 
@@ -190,10 +204,10 @@ def assemble_video(
         timeline.append((img_p, text, round(line_dur, 4)))
         current_time_sec += line_dur
 
-        # 2c. Gap before next line if instrumental break
+        # 2c. Gap before next line if instrumental break >= 0.5s
         if i < len(lyrics) - 1:
             next_start = lyrics[i + 1]["start_ms"] / 1000.0
-            if next_start > current_time_sec + 0.005:
+            if next_start > current_time_sec + 0.49:
                 gap_dur = next_start - current_time_sec
                 timeline.append((img_p, "", round(gap_dur, 4)))
                 current_time_sec = next_start

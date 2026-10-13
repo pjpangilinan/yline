@@ -41,6 +41,21 @@ Example: For lyrics ["The calendar's hung", "You're a regular decorated emergenc
 # Batch size for LLM calls (process lyrics in chunks to stay within token limits)
 BATCH_SIZE = 10
 
+ATMOSPHERIC_THEMES = [
+    "cinematic landscape sunset",
+    "starry night sky mountains",
+    "serene misty forest morning",
+    "neon city streets rain night",
+    "cozy warm room window aesthetic",
+    "ocean waves cliff golden hour",
+    "autumn road fallen leaves",
+    "vintage film grain architecture",
+    "quiet snowy winter scenery",
+    "peaceful desert dunes dusk",
+    "dreamy clouds pastel sunset",
+    "solitary lighthouse coastal shore",
+]
+
 
 async def image_agent_node(state: PipelineState) -> dict[str, Any]:
     """LangGraph node: generate search queries and download images for each lyric line.
@@ -74,34 +89,43 @@ async def image_agent_node(state: PipelineState) -> dict[str, Any]:
     # Concurrency bounded to 2 to respect Wikimedia / Bing rate limit policies
     concurrency_sem = asyncio.Semaphore(2)
     seen_hashes: set[str] = set()
-    hash_lock = asyncio.Lock()
 
     async def _fetch_for_line(i: int, query: str) -> dict[str, Any]:
         async with concurrency_sem:
-            logger.info(f"  [{i+1}/{len(lyrics)}] Searching: {query}")
-            try:
-                urls = await search_images(query, max_results=15)
-                if not urls:
-                    # Fallback to generic search
-                    urls = await search_images(f"{artist} {title} aesthetic", max_results=15)
+            save_path = os.path.join(output_dir, f"img_{i:03d}.jpg")
+            lyric_text = lyrics[i].get("text", "") if i < len(lyrics) else ""
 
-                if urls:
-                    save_path = os.path.join(output_dir, f"img_{i:03d}.jpg")
+            candidate_queries = [
+                query,
+                _clean_fallback_query(lyric_text, title),
+                f"{title} landscape scenery",
+                ATMOSPHERIC_THEMES[i % len(ATMOSPHERIC_THEMES)],
+                f"cinematic nature background {i + 1}",
+            ]
+
+            for tier_idx, q in enumerate(candidate_queries):
+                if not q:
+                    continue
+                try:
+                    urls = await search_images(q, max_results=15)
+                    if not urls:
+                        continue
+
                     for url in urls:
                         try:
                             path = await download_image(url, save_path, seen_hashes=seen_hashes)
-                            if not path:
-                                continue
-                            return {
-                                "path": path,
-                                "lyric_index": i,
-                                "search_query": query,
-                            }
+                            if path:
+                                return {
+                                    "path": path,
+                                    "lyric_index": i,
+                                    "search_query": q,
+                                }
                         except Exception as e:
-                            logger.warning(f"Failed to download {url}: {e}")
+                            logger.debug(f"Failed to download {url}: {e}")
                             continue
-            except Exception as e:
-                logger.warning(f"Image search failed for line {i}: {e}")
+                except Exception as e:
+                    logger.debug(f"Image search tier {tier_idx+1} failed for line {i}: {e}")
+                    continue
 
             return {
                 "path": "",
