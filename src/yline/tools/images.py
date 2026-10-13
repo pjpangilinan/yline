@@ -81,7 +81,7 @@ class ImageRateLimiter:
 
 _image_rate_limiter = ImageRateLimiter()
 
-# Domains that host generic watermarked stock photography
+# Domains that host generic watermarked stock photography or commercial retail products
 STOCK_DOMAINS = [
     "shutterstock.com",
     "istockphoto.com",
@@ -96,10 +96,32 @@ STOCK_DOMAINS = [
     "canva.com",
     "clipart",
     "pond5.com",
+    "walmart.com",
+    "amazon.com",
+    "ebay.com",
+    "target.com",
+    "etsy.com",
+    "displate.com",
+    "movieposterdb.com",
+    "redbubble.com",
+    "aliexpress.com",
 ]
 
+# Editorial, military PR, political, library archival scans, and shopping terms to exclude
+EDITORIAL_EXCLUDE = {
+    "obama", "trump", "biden", "bush", "clinton", "president", "congress", "senate",
+    "white house", "politician", "politics", "military", "army", "navy", "air force",
+    "national guard", "dvids", "dod", "soldier", "troops", "police", "patrol",
+    "library of congress", "boston public library", "internet archive", "book images",
+    "trade card", "disaster", "outlet", "outlets", "mall", "shopping center",
+    "specimen", "serpentinite", "geological", "mineral", "conference", "convention",
+    "award", "ceremony", "protest", "rally", "diagram", "chart", "map", "blueprint",
+    "1908", "1910", "1915", "1920", "1930", "1940", "1839", "1850", "1860", "1880",
+}
+
+
 def is_stock_url(url: str) -> bool:
-    """Return True if URL is from a known stock photo provider."""
+    """Return True if URL is from a known stock photo or commercial retail provider."""
     u = url.lower()
     return any(domain in u for domain in STOCK_DOMAINS)
 
@@ -159,9 +181,10 @@ async def _search_wikimedia(query: str, max_results: int = 5) -> list[str]:
                 "generator": "search",
                 "gsrnamespace": "6",  # File namespace
                 "gsrsearch": f"{query} photo",
-                "gsrlimit": str(min(max_results + 3, 10)),
-                "prop": "imageinfo",
+                "gsrlimit": str(min(max_results + 5, 15)),
+                "prop": "imageinfo|categories",
                 "iiprop": "url|size|mime",
+                "cllimit": "25",
                 "format": "json",
             }
             async with httpx.AsyncClient(
@@ -178,6 +201,7 @@ async def _search_wikimedia(query: str, max_results: int = 5) -> list[str]:
                     pages = data.get("query", {}).get("pages", {})
                     results = []
                     for _, v in pages.items():
+                        title = v.get("title", "")
                         infos = v.get("imageinfo", [])
                         if not infos:
                             continue
@@ -190,6 +214,10 @@ async def _search_wikimedia(query: str, max_results: int = 5) -> list[str]:
                         # Require landscape aspect ratio suitable for 16:9 video slides.
                         # Naturally filters out portrait book pages, stamps, vertical cards, and coins by geometry.
                         if w < 800 or h < 450 or (w / max(1, h)) < 1.15:
+                            continue
+                        cats = " ".join(c.get("title", "").lower() for c in v.get("categories", []))
+                        t_low = title.lower()
+                        if any(term in t_low or term in cats for term in EDITORIAL_EXCLUDE):
                             continue
                         url = info.get("url")
                         if url and not is_stock_url(url):
@@ -209,19 +237,20 @@ async def _search_bing(query: str, max_results: int = 15) -> list[str]:
         "aesthetic", "scene", "view", "photo", "image", "wallpaper", "picture"
     }
 
+    import urllib.parse
+    enc_q = urllib.parse.quote_plus(f"{query} photography")
+
     for attempt in range(2):
         try:
             await _image_rate_limiter.wait("bing.com")
-            url = f"https://www.bing.com/images/search?q={query}&form=HDRSC2&first=1"
+            url = f"https://www.bing.com/images/search?q={enc_q}&form=HDRSC2&first=1"
             async with httpx.AsyncClient(
                 headers=BROWSER_HEADERS, timeout=12.0, follow_redirects=True
             ) as client:
                 res = await client.get(url)
                 if res.status_code == 200:
-                    # Parse image JSON blobs: m="{...}"
                     raw_matches = re.findall(r'm="(\{[^"]+\})"', res.text)
                     relevant_matches = []
-                    fallback_matches = []
 
                     for m in raw_matches:
                         try:
@@ -231,23 +260,17 @@ async def _search_bing(query: str, max_results: int = 15) -> list[str]:
                                 continue
                             
                             title = d.get("t", "").lower()
+                            if any(term in title for term in EDITORIAL_EXCLUDE):
+                                continue
                             title_words = set(re.findall(r"[a-zA-Z]{3,}", title))
                             overlap = query_keywords.intersection(title_words)
                             if query_keywords and len(overlap) > 0:
                                 relevant_matches.append(murl)
-                            else:
-                                fallback_matches.append(murl)
                         except Exception:
                             continue
 
-                    # If we found matches with keyword overlap in the title, use them
-                    if len(relevant_matches) >= 2:
+                    if relevant_matches:
                         return relevant_matches[:max_results]
-                    
-                    # Otherwise, if Bing had multiple matches, take top relevant + fallback
-                    combined = relevant_matches + fallback_matches
-                    if len(combined) >= 3:
-                        return combined[:max_results]
         except Exception as e:
             logger.debug(f"Bing search attempt {attempt+1} failed: {e}")
             await asyncio.sleep(1.2 + attempt * 1.0)
@@ -259,37 +282,34 @@ async def search_images(query: str, max_results: int = 15) -> list[str]:
     """Search across multiple providers with relevance fallback.
     
     1. First tries Wikimedia Commons (high relevance, curated CC/public domain images).
-    2. Then tries Bing Images (with title keyword validation to avoid local filler).
-    3. If query fails, simplifies query words and retries.
+    2. If multi-word, simplifies query to top 2 keywords and tries Wikimedia Commons.
+    3. Then tries Bing Images (with title keyword validation to avoid local filler).
     4. Finally falls back to DuckDuckGo images.
     """
     clean_q = " ".join(re.findall(r"[a-zA-Z0-9]+", query))
     if not clean_q:
         clean_q = query
 
-    # 1. Wikimedia Commons
+    # 1. Wikimedia Commons (primary)
     urls = await _search_wikimedia(clean_q, max_results=max_results)
     if urls:
         return urls
 
-    # 2. Bing Images
+    # 1b. Simplified 2-word Wikimedia query
+    words = [w for w in re.findall(r"[a-zA-Z]{3,}", clean_q) if w.lower() not in {"aesthetic", "scene", "view", "photo", "image", "wallpaper", "picture"}]
+    if len(words) >= 2:
+        two_word_q = " ".join(words[:2])
+        if two_word_q.lower() != clean_q.lower():
+            urls = await _search_wikimedia(two_word_q, max_results=max_results)
+            if urls:
+                return urls
+
+    # 2. Bing Images (secondary with keyword overlap)
     urls = await _search_bing(clean_q, max_results=max_results)
     if urls:
         return urls
 
-    # 3. If query has >2 words and returned 0 results, simplify to top 2 keywords
-    words = [w for w in re.findall(r"[a-zA-Z]{3,}", clean_q) if w.lower() not in {"aesthetic", "scene", "view"}]
-    if len(words) > 2:
-        simplified = " ".join(words[:2])
-        logger.info(f"Retrying image search with simplified query '{simplified}' (was '{clean_q}')")
-        urls = await _search_wikimedia(simplified, max_results=max_results)
-        if urls:
-            return urls
-        urls = await _search_bing(simplified, max_results=max_results)
-        if urls:
-            return urls
-
-    # 4. DuckDuckGo fallback
+    # 3. DuckDuckGo fallback
     urls = await _search_ddg(clean_q, max_results=max_results)
     if urls:
         return urls

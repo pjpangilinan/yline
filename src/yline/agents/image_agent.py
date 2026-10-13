@@ -21,21 +21,20 @@ from yline.rate_limiter import rate_limiter
 
 logger = logging.getLogger(__name__)
 
-SYSTEM_PROMPT = """You are a creative visual art director agent. Given a song's lyrics, generate concise, concrete image search queries for each lyric line.
+SYSTEM_PROMPT = """You are a cinematic music video art director. Given a song's lyrics, generate 2-to-3 word search queries for atmospheric photographic backgrounds for each line.
 
 Rules:
-- Generate 2 to 3 concrete visual words per line (maximum 4 words). Focus on physical objects, settings, lighting, or tangible actions.
-  GOOD: "autumn leaves", "holding hands", "candlelight", "hospital corridor", "rainy window", "bicycle path", "pocket watch", "vintage car".
-  BAD: "soft candlelight calming atmosphere", "scattered gold coins dark floor", "cracked spine fragile structure", "aesthetic pleasing scene".
-- Search engines fail when given abstract metaphors or long phrases. Convert metaphors and feelings into simple, concrete physical scenes:
-  - If a lyric is about heartbreak/loss -> "broken glass", "empty room", "solitary figure rain".
-  - If a lyric is about joy/romance -> "holding hands", "golden sunset", "couple smiling".
-  - If a lyric is about time/waiting -> "wall clock", "train platform", "hourglass".
+- Focus entirely on moody, atmospheric environmental scenery, weather, lighting, landscapes, and evocative spaces.
+  GOOD: "foggy window night", "solitary streetlamp rain", "dim bedroom shadow", "autumn road mist", "empty park twilight", "sunset horizon silhouette", "overcast shoreline waves", "candlelight dark wood", "bare winter trees", "cloudy night sky", "quiet suburban street", "misty forest path".
+  BAD: "soft candlelight calming atmosphere", "aesthetic pleasing scene", "high quality photography".
+- NEVER be hyper-literal to lyric idioms or physical props!
+  Do NOT search for literal words like "belt", "headgear", "clown", "calendar", "pills", "broken glass", "coins", or human faces.
+- Convert the emotional undertone (solitude, regret, wistful warmth, melancholy, hope) into evocative, cinematic environmental landscapes and interior lighting.
 - Never use generic filler terms: "aesthetic", "scene", "wallpaper", "photo", "moody", "vibes".
-- Remove filler words (ooh, yeah, ah, etc.) and punctuation.
+- Remove filler vocalizations (ooh, yeah, ah, etc.) and punctuation.
 
-Respond with a JSON array of search query strings, exactly one per lyric line.
-Example: For lyrics ["The calendar's hung", "You're a regular decorated emergency"], respond with: ["vintage calendar", "hospital hallway"]
+Respond strictly with a JSON array of query strings, exactly one per lyric line.
+Example: For lyrics ["No one to wonder when I will be home", "One more night alone"], respond with: ["dim bedroom night", "foggy streetlamp rain"]
 """
 
 # Batch size for LLM calls (process lyrics in chunks to stay within token limits)
@@ -99,12 +98,12 @@ async def image_agent_node(state: PipelineState) -> dict[str, Any]:
     output_dir = os.path.join("output", f"{artist} - {title}".replace("/", "_"), "images")
     os.makedirs(output_dir, exist_ok=True)
 
-    # Step 1: Generate search queries for all lyrics using LLM
-    all_queries = await _generate_search_queries(lyrics, artist, title)
-
-    # Step 2: Dynamically generate song-specific visual theme palette
+    # Step 1: Dynamically generate song-specific visual theme palette
     sample_texts = [line.get("text", "") for line in lyrics if line.get("text")]
     theme_palette = await _generate_theme_palette(artist, title, sample_texts)
+
+    # Step 2: Generate search queries for all lyrics using LLM
+    all_queries = await _generate_search_queries(lyrics, artist, title, theme_palette)
 
     # Step 3: Concurrently download unique images for each query
     # Concurrency bounded to 2 to respect Wikimedia / Bing rate limit policies
@@ -114,13 +113,12 @@ async def image_agent_node(state: PipelineState) -> dict[str, Any]:
     async def _fetch_for_line(i: int, query: str) -> dict[str, Any]:
         async with concurrency_sem:
             save_path = os.path.join(output_dir, f"img_{i:03d}.jpg")
-            lyric_text = lyrics[i].get("text", "") if i < len(lyrics) else ""
 
             candidate_queries = [
                 query,
-                _clean_fallback_query(lyric_text, title),
                 theme_palette[i % len(theme_palette)],
                 f"{artist} {title} photography",
+                f"{title} landscape scenery",
             ]
 
             for tier_idx, q in enumerate(candidate_queries):
@@ -161,7 +159,7 @@ async def image_agent_node(state: PipelineState) -> dict[str, Any]:
 
 
 async def _generate_search_queries(
-    lyrics: list[dict], artist: str, title: str
+    lyrics: list[dict], artist: str, title: str, theme_palette: list[str] | None = None
 ) -> list[str]:
     """Use LLM to generate image search queries for each lyric line.
 
@@ -169,6 +167,7 @@ async def _generate_search_queries(
     """
     all_queries: list[str] = []
     lyric_texts = [line["text"] for line in lyrics]
+    palette = theme_palette or [f"{title} scenery"]
 
     for batch_start in range(0, len(lyric_texts), BATCH_SIZE):
         batch = lyric_texts[batch_start : batch_start + BATCH_SIZE]
@@ -176,7 +175,7 @@ async def _generate_search_queries(
         await rate_limiter.acquire(estimated_tokens=500)
 
         try:
-            llm = ChatGroq(model="openai/gpt-oss-120b", temperature=0.5, max_tokens=1000)
+            llm = ChatGroq(model="openai/gpt-oss-120b", temperature=0.5, max_tokens=2000)
             response = await llm.ainvoke([
                 SystemMessage(content=SYSTEM_PROMPT),
                 HumanMessage(
@@ -193,7 +192,7 @@ async def _generate_search_queries(
                 )
 
             # Parse JSON array from response
-            content = response.content or ""
+            content = str(response.content or "")
             start = content.find("[")
             end = content.rfind("]") + 1
             parsed_queries = None
@@ -207,22 +206,21 @@ async def _generate_search_queries(
                 # Ensure queries are strings and pad if fewer than batch
                 cleaned = [str(q).strip().strip('"\'') for q in parsed_queries if str(q).strip()]
                 while len(cleaned) < len(batch):
-                    cleaned.append(f"{title} scenery")
+                    fallback_q = palette[len(cleaned) % len(palette)]
+                    cleaned.append(fallback_q)
                 all_queries.extend(cleaned[: len(batch)])
             else:
-                logger.warning(f"Could not parse JSON query array from LLM, falling back to thematic queries")
-                all_queries.extend([_clean_fallback_query(text, title) for text in batch])
+                logger.warning("Could not parse JSON query array from LLM, falling back to thematic palette")
+                all_queries.extend([
+                    palette[idx % len(palette)]
+                    for idx in range(len(all_queries), len(all_queries) + len(batch))
+                ])
 
         except Exception as e:
             logger.warning(f"LLM query generation failed: {e}")
-            all_queries.extend([_clean_fallback_query(text, title) for text in batch])
+            all_queries.extend([
+                palette[idx % len(palette)]
+                for idx in range(len(all_queries), len(all_queries) + len(batch))
+            ])
 
     return all_queries
-
-
-def _clean_fallback_query(text: str, title: str) -> str:
-    """Produce a concise 2-3 word fallback query from lyric text."""
-    words = re.findall(r"[a-zA-Z]{3,}", text)
-    if len(words) >= 2:
-        return " ".join(words[:3])
-    return f"{title} scenery"
