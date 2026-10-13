@@ -16,6 +16,8 @@ from typing import Any
 import imageio_ffmpeg
 from PIL import Image, ImageDraw, ImageFont
 
+Image.MAX_IMAGE_PIXELS = 200_000_000
+
 logger = logging.getLogger(__name__)
 
 # System font discovery

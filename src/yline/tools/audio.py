@@ -76,14 +76,22 @@ async def download_audio(
         # Search across all query variants and deduplicate candidates by video ID
         candidates = []
         seen_ids = set()
+        base_query = f"{expected_artist} {expected_title}".strip() if (expected_artist and expected_title) else query.strip()
         search_terms = [
-            f"{query} official audio",
-            f"{query} lyric video",
+            base_query,
+            f"{base_query} official audio",
+            f"{base_query} audio",
+            f"{base_query} lyric video",
             f"{query}",
         ]
+        # Remove duplicate search queries while preserving order
+        unique_search_terms = []
+        for st in search_terms:
+            if st and st not in unique_search_terms:
+                unique_search_terms.append(st)
 
         with yt_dlp.YoutubeDL({'quiet': True, 'extract_flat': True}) as ydl:
-            for st in search_terms:
+            for st in unique_search_terms:
                 try:
                     res = ydl.extract_info(f"ytsearch5:{st}", download=False)
                     if res and 'entries' in res:
@@ -106,11 +114,11 @@ async def download_audio(
             # 1. Title fidelity: Token F1 against expected song title
             title_score = _token_similarity(c_title, expected_title) if expected_title else 0.8
 
-            # 2. Artist/Uploader alignment
+            # 2. Artist/Uploader alignment: prioritize channels actually matching the artist
             if expected_artist:
                 artist_in_uploader = _token_similarity(c_uploader, expected_artist)
                 artist_in_title = _token_similarity(c_title, expected_artist)
-                artist_score = max(artist_in_uploader, artist_in_title)
+                artist_score = 0.70 * artist_in_uploader + 0.30 * artist_in_title
             else:
                 artist_score = 0.8
 

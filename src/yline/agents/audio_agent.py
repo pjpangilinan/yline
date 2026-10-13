@@ -37,16 +37,22 @@ async def audio_agent_node(state: PipelineState) -> dict[str, Any]:
 
     retry_counts = state.get("retry_counts", {})
     attempts = retry_counts.get("audio_agent", 0)
-    
-    suffixes = ["official audio", "lyric video", "audio", ""]
+
+    suffixes = ["", "official audio", "lyric video", "audio"]
     suffix = suffixes[attempts % len(suffixes)]
     query = f"{artist} - {title} {suffix}".strip()
 
-    # Calculate expected song duration from synced lyrics if available
+    # Calculate expected song duration: prioritize official metadata duration, fallback to lyrics bound
+    meta_dur = metadata.get("duration_sec")
     lyrics = state.get("lyrics", [])
-    target_duration_sec = None
-    if lyrics and lyrics[-1].get("end_ms"):
-        target_duration_sec = lyrics[-1]["end_ms"] / 1000.0
+    lyric_dur = (lyrics[-1]["end_ms"] / 1000.0) if (lyrics and lyrics[-1].get("end_ms")) else None
+
+    if meta_dur and float(meta_dur) > 0:
+        target_duration_sec = float(meta_dur)
+    elif lyric_dur:
+        target_duration_sec = lyric_dur
+    else:
+        target_duration_sec = None
 
     logger.info(f"Downloading audio (attempt {attempts+1}): {query} (target dur: {target_duration_sec}s)")
 

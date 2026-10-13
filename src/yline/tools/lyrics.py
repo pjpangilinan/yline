@@ -157,7 +157,7 @@ async def fetch_synced_lyrics(
                             best_track = max(valid_tracks, key=track_rank)
                             return parse_lrc(best_track["syncedLyrics"])
                     return None
-                elif res.status_code == 429:
+                elif res.status_code in (429, 500, 502, 503, 504):
                     await asyncio.sleep(2.0 * (attempt + 1))
                     continue
         except Exception:

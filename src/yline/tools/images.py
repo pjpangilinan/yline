@@ -15,6 +15,8 @@ import certifi
 import httpx
 from PIL import Image
 
+Image.MAX_IMAGE_PIXELS = 200_000_000
+
 logger = logging.getLogger(__name__)
 
 # Standard browser headers to avoid 403 Forbidden / bot detection
@@ -348,6 +350,10 @@ async def download_image(
 
             if img.mode != "RGB":
                 img = img.convert("RGB")
+
+            # Downscale oversized images to 1080p to keep memory and encoding fast
+            if w > 1920 or h > 1080:
+                img.thumbnail((1920, 1080), Image.Resampling.LANCZOS)
 
             # Encode to JPEG and compute MD5 on the exact saved bytes
             buf = io.BytesIO()

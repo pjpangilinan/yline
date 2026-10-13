@@ -72,7 +72,74 @@ async def search_music(
     if not recordings:
         return {"status": "not_found", "message": f"No results for '{query}'"}
 
-    # Rank and extract results
+    import re
+
+    def _tokenize(text: str) -> set[str]:
+        return set(re.findall(r"\w+", text.lower()))
+
+    def _token_similarity(candidate_text: str, expected_text: str) -> float:
+        c_tokens = _tokenize(candidate_text)
+        e_tokens = _tokenize(expected_text)
+        if not e_tokens:
+            return 1.0 if not c_tokens else 0.0
+        if not c_tokens:
+            return 0.0
+        overlap = len(c_tokens.intersection(e_tokens))
+        if overlap == 0:
+            return 0.0
+        p = overlap / len(c_tokens)
+        r = overlap / len(e_tokens)
+        return 2.0 * (p * r) / (p + r)
+
+    def _select_canonical_release(releases: list[dict[str, Any]]) -> tuple[str | None, int | None, bool]:
+        """Pick the best official studio release and return (album_title, release_year, is_clean_studio)."""
+        if not releases:
+            return None, None, False
+
+        def release_sort_key(rel: dict[str, Any]):
+            rg = rel.get("release-group", {})
+            is_official = 1 if rel.get("status") == "Official" else 0
+            is_primary_album = 1 if rg.get("primary-type") in ("Album", "EP", "Single") else 0
+            has_no_secondary = 1 if not rg.get("secondary-types") else 0
+            return (has_no_secondary, is_primary_album, is_official)
+
+        best_rel = max(releases, key=release_sort_key)
+        album_title = best_rel.get("title")
+        year = None
+        if best_rel.get("date"):
+            try:
+                year = int(best_rel["date"][:4])
+            except (ValueError, IndexError):
+                pass
+        rg_best = best_rel.get("release-group", {})
+        is_clean_studio = (
+            best_rel.get("status") == "Official"
+            and rg_best.get("primary-type") in ("Album", "EP", "Single")
+            and not rg_best.get("secondary-types")
+        )
+        return album_title, year, is_clean_studio
+
+    def recording_rank(rec: dict[str, Any]) -> float:
+        ac_list = rec.get("artist-credit", [])
+        if ac_list and isinstance(ac_list[0], dict):
+            rec_artist = "".join(ac.get("name", "") + ac.get("joinphrase", "") for ac in ac_list).strip()
+        else:
+            rec_artist = ""
+        rec_title = rec.get("title", "")
+
+        t_sim = _token_similarity(rec_title, title or query)
+        a_sim = _token_similarity(rec_artist, artist or query)
+
+        releases = rec.get("releases", [])
+        _, _, is_clean_studio = _select_canonical_release(releases)
+        studio_score = 1.0 if is_clean_studio else 0.0
+        rel_count_score = min(1.0, len(releases) / 6.0)
+
+        return 0.40 * t_sim + 0.30 * a_sim + 0.20 * studio_score + 0.10 * rel_count_score
+
+    recordings = sorted(recordings, key=recording_rank, reverse=True)
+
+    # Extract results
     results = []
     for rec in recordings:
         ac_list = rec.get("artist-credit", [])
@@ -85,13 +152,7 @@ async def search_music(
 
         rec_title = rec.get("title", query)
         releases = rec.get("releases", [])
-        album = releases[0].get("title") if releases else None
-        year = None
-        if releases and releases[0].get("date"):
-            try:
-                year = int(releases[0]["date"][:4])
-            except (ValueError, IndexError):
-                pass
+        album, year, _ = _select_canonical_release(releases)
 
         length_ms = rec.get("length")
         duration_sec = round(length_ms / 1000.0, 1) if length_ms else None
