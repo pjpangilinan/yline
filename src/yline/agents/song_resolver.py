@@ -47,6 +47,44 @@ async def song_resolver_node(state: PipelineState) -> dict[str, Any]:
 
     logger.info(f"Resolving song query: {query}")
 
+    # Fast-path: Normalize dashes and check for clear "Artist - Title" or "Title by Artist"
+    norm_query = query.replace("–", "-").replace("—", "-").strip()
+    direct_match = None
+    if " - " in norm_query:
+        parts = norm_query.split(" - ", 1)
+        artist_cand, title_cand = parts[0].strip().strip('"\''), parts[1].strip().strip('"\'')
+        try:
+            search_res = await search_music(norm_query, artist=artist_cand, title=title_cand)
+            if search_res.get("status") == "found" and search_res.get("results"):
+                direct_match = search_res["results"][0]
+        except Exception:
+            pass
+    elif " by " in norm_query.lower():
+        import re
+        parts = re.split(r"\s+by\s+", norm_query, maxsplit=1, flags=re.IGNORECASE)
+        title_cand, artist_cand = parts[0].strip().strip('"\''), parts[1].strip().strip('"\'')
+        try:
+            search_res = await search_music(norm_query, artist=artist_cand, title=title_cand)
+            if search_res.get("status") == "found" and search_res.get("results"):
+                direct_match = search_res["results"][0]
+        except Exception:
+            pass
+
+    if direct_match and direct_match.get("artist") and direct_match.get("title"):
+        logger.info(f"Direct match found: {direct_match['artist']} - {direct_match['title']}")
+        metadata = SongMetadata(
+            artist=direct_match["artist"],
+            title=direct_match["title"],
+            album=direct_match.get("album"),
+            year=direct_match.get("year"),
+            duration_sec=direct_match.get("duration_sec"),
+            musicbrainz_id=direct_match.get("musicbrainz_id"),
+        )
+        return {
+            "song_metadata": metadata.model_dump(),
+            "retry_counts": retry_counts,
+        }
+
     llm = ChatGroq(
         model="openai/gpt-oss-120b",
         temperature=0,
@@ -55,7 +93,7 @@ async def song_resolver_node(state: PipelineState) -> dict[str, Any]:
 
     messages: list = [
         SystemMessage(content=SYSTEM_PROMPT),
-        HumanMessage(content=f"Find the song: {query}"),
+        HumanMessage(content=f"Find the song: {norm_query}"),
     ]
 
     # Tools definition
@@ -88,7 +126,25 @@ async def song_resolver_node(state: PipelineState) -> dict[str, Any]:
         try:
             response = await llm.ainvoke(messages, tools=tools)
         except Exception as e:
-            logger.error(f"LLM call failed: {e}")
+            logger.warning(f"LLM call failed: {e}. Falling back to direct MusicBrainz search.")
+            try:
+                search_res = await search_music(norm_query)
+                if search_res.get("status") == "found" and search_res.get("results"):
+                    best = search_res["results"][0]
+                    metadata = SongMetadata(
+                        artist=best["artist"],
+                        title=best["title"],
+                        album=best.get("album"),
+                        year=best.get("year"),
+                        duration_sec=best.get("duration_sec"),
+                        musicbrainz_id=best.get("musicbrainz_id"),
+                    )
+                    return {
+                        "song_metadata": metadata.model_dump(),
+                        "retry_counts": retry_counts,
+                    }
+            except Exception:
+                pass
             errors.append(f"Song resolver LLM error: {e}")
             return {"errors": errors}
 
