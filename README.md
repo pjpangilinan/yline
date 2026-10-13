@@ -38,7 +38,7 @@ flowchart TD
     F -->|Estimate Timestamps| G[LLM Timestamp Engine]
     D --> H(Image Agent)
     H -->|Generate Visual Prompts| I[Groq LLM]
-    I -->|Scrape Aesthetic Images| J{DuckDuckGo Images}
+    I -->|Scrape Aesthetic Images| J{Multi-Tier Image Search}
     H --> K(Audio Agent)
     K -->|Download Audio| L{yt-dlp}
     K --> M(Video Assembler)
@@ -46,11 +46,11 @@ flowchart TD
 ```
 
 ### The Architecture
-1. **Song Resolver**: Takes a loose user query (e.g. *"Color Your Night"*) and resolves official artist, title, album, and release year via the MusicBrainz API with fielded search fallbacks.
-2. **Lyrics Agent**: Fetches highly accurate, human-verified synced `.lrc` files from LRCLIB with instrumental gap capping and standard single-duration ranking. If unavailable, it pivots to the Genius API and utilizes an LLM protocol to predict timestamps mathematically.
-3. **Image Agent**: Reads each lyric line to craft evocative, stylistic prompts, query DuckDuckGo, Bing, and Wikimedia, and enforce perceptual hash deduplication to guarantee unique, mood-appropriate imagery.
-4. **Audio Agent**: Leverages `yt-dlp` to securely fetch the highest-quality official audio stream matching the resolved title and expected duration.
-5. **Video Assembler**: Composites high-contrast typography and LANCZOS-scaled backgrounds using Pillow, then renders via a batch Split-CFR pipeline directly through hardware-accelerated FFmpeg (`h264_nvenc` or `libx264`), ensuring constant 24fps CFR synchronization and zero dropped frames.
+1. **Song Resolver**: Resolves official track metadata via MusicBrainz with fielded query fallbacks and fast-path heuristics.
+2. **Lyrics Agent**: Retrieves synced `.lrc` lyrics from LRCLIB using harmonic token $F_1$ scoring and duration proximity (falling back to Genius + LLM estimation), with vocal pause holding and word-count duration scaling.
+3. **Image Agent**: Generates tailored visual palettes via an LLM Art Director, querying multi-tier sources (DuckDuckGo, Bing, Wikimedia) with geometric 16:9 filtering ($w/h \ge 1.15$) and perceptual hash deduplication.
+4. **Audio Agent**: Downloads official studio audio via `yt-dlp` using composite ranking (token $F_1$, duration alignment, channel authority) to exclude live, demo, or altered tracks.
+5. **Video Assembler**: Composites high-contrast typography and LANCZOS-scaled backgrounds with Pillow, then renders via Split-CFR hardware-accelerated FFmpeg (`h264_nvenc` or `libx264`) at constant 24fps CFR.
 
 ---
 
