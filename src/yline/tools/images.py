@@ -81,7 +81,7 @@ class ImageRateLimiter:
 
 _image_rate_limiter = ImageRateLimiter()
 
-# Domains that host generic watermarked stock photography or commercial retail products
+# Domains that host generic watermarked stock photography, video thumbnails, or retail products
 STOCK_DOMAINS = [
     "shutterstock.com",
     "istockphoto.com",
@@ -105,6 +105,13 @@ STOCK_DOMAINS = [
     "movieposterdb.com",
     "redbubble.com",
     "aliexpress.com",
+    "ytimg.com",
+    "youtube.com",
+    "vimeo.com",
+    "dailymotion.com",
+    "prcdn.co",
+    "pinimg.com",
+    "tiktok.com",
 ]
 
 # Editorial, military PR, political, library archival scans, and shopping terms to exclude
@@ -112,6 +119,9 @@ EDITORIAL_EXCLUDE = {
     "obama", "trump", "biden", "bush", "clinton", "president", "congress", "senate",
     "white house", "politician", "politics", "military", "army", "navy", "air force",
     "national guard", "dvids", "dod", "soldier", "troops", "police", "patrol",
+    "atmis", "somalia", "ambassador", "diplomatic", "ministry", "minister",
+    "delegation", "peacekeeping", "summit", "parliament", "zebra", "wildlife",
+    "taxidermy", "species", "subspecies", "genus",
     "library of congress", "boston public library", "internet archive", "book images",
     "trade card", "disaster", "outlet", "outlets", "mall", "shopping center",
     "specimen", "serpentinite", "geological", "mineral", "conference", "convention",
@@ -121,7 +131,7 @@ EDITORIAL_EXCLUDE = {
 
 
 def is_stock_url(url: str) -> bool:
-    """Return True if URL is from a known stock photo or commercial retail provider."""
+    """Return True if URL is from a known stock photo, video thumbnail, or retail provider."""
     u = url.lower()
     return any(domain in u for domain in STOCK_DOMAINS)
 

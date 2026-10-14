@@ -21,17 +21,23 @@ from yline.rate_limiter import rate_limiter
 
 logger = logging.getLogger(__name__)
 
-SYSTEM_PROMPT = """You are a cinematic music video art director. Given a song's lyrics, generate 2-to-3 word search queries for atmospheric photographic backgrounds for each line.
+SYSTEM_PROMPT = """You are a visionary music video art director.
+Your task: Deeply analyze the song's lyrics, theme, cultural setting, and emotional tone (translating non-English lyrics internally to grasp the true meaning), then generate evocative 2-to-3 word photography search queries for each lyric line.
 
-Rules:
-- Focus entirely on moody, atmospheric environmental scenery, weather, lighting, landscapes, and evocative spaces.
-  GOOD: "foggy window night", "solitary streetlamp rain", "dim bedroom shadow", "autumn road mist", "empty park twilight", "sunset horizon silhouette", "overcast shoreline waves", "candlelight dark wood", "bare winter trees", "cloudy night sky", "quiet suburban street", "misty forest path".
-  BAD: "soft candlelight calming atmosphere", "aesthetic pleasing scene", "high quality photography".
-- NEVER be hyper-literal to lyric idioms or physical props!
-  Do NOT search for literal words like "belt", "headgear", "clown", "calendar", "pills", "broken glass", "coins", or human faces.
-- Convert the emotional undertone (solitude, regret, wistful warmth, melancholy, hope) into evocative, cinematic environmental landscapes and interior lighting.
-- Never use generic filler terms: "aesthetic", "scene", "wallpaper", "photo", "moody", "vibes".
-- Remove filler vocalizations (ooh, yeah, ah, etc.) and punctuation.
+RULES:
+1. Context and cultural setting:
+   - Understand what the song is actually about!
+   - For urban, everyday life, or romance songs (e.g., OPM/indie songs about dating on a budget, city life, inflation): evoke relatable modern settings like "cozy coffee shop", "supermarket aisle", "street food night", "rainy city street", "dim kitchen table", "city skyline night", "sunset rooftop", "convenience store night", "starry sky".
+   - For folk, melancholic, or acoustic songs: evoke atmospheric nature like "foggy forest path", "overcast mountain lake", "candlelit dark room", "autumn porch twilight".
+   - For synthpop or energetic songs: evoke vibrant urban nightscapes like "neon rain street", "city lights dawn", "night highway traffic".
+2. NEVER be hyper-literal or absurd:
+   - Do NOT search for literal idioms, body parts, or props (e.g., NEVER search for "can of sardines", "bag of rice", "clown", "belt", "money", or human faces).
+   - Do NOT produce nonsensical weather mismatches (e.g. NEVER search for snow or blizzards for tropical/urban settings, and NEVER search for wild animals or desert zebras).
+3. Vocal filler lines (e.g. "Ooh", "Ah", "La la"):
+   - When a lyric is just vocalizations or non-verbal syllables, generate beautiful cinematic transition scenery matching the song's atmosphere (e.g. "twilight city skyline", "soft bokeh streetlights", "sunset clouds horizon").
+4. Concrete visual words:
+   - Each query must consist of 2 to 3 concrete physical setting and lighting words (maximum 4 words).
+   - Never use generic filler words like "aesthetic", "scene", "photo", "wallpaper", "vibes".
 
 Respond strictly with a JSON array of query strings, exactly one per lyric line.
 Example: For lyrics ["No one to wonder when I will be home", "One more night alone"], respond with: ["dim bedroom night", "foggy streetlamp rain"]
@@ -49,9 +55,10 @@ async def _generate_theme_palette(artist: str, title: str, sample_lyrics: list[s
         lyrics_excerpt = " | ".join(sample_lyrics[:6])
         response = await llm.ainvoke([
             SystemMessage(content=(
-                "You are a cinematic art director. Generate 6 to 8 diverse, evocative 2-to-3-word physical setting and lighting photography queries "
+                "You are a cinematic art director. Analyze the song's genre, language, and theme. "
+                "Generate 6 to 8 diverse, evocative 2-to-3-word physical setting and lighting photography queries "
                 "that capture this song's specific visual world, aesthetic, and mood. Respond strictly with a JSON array of query strings. "
-                "Example: [\"foggy mountain highway\", \"neon rain street\", \"vintage vinyl record\", \"candlelit wooden table\"]"
+                "Example: [\"cozy coffee shop\", \"rainy city street\", \"supermarket aisle\", \"city skyline night\", \"warm kitchen table\"]"
             )),
             HumanMessage(content=f"Song: {artist} - {title}\nLyrics: {lyrics_excerpt}"),
         ])
@@ -66,10 +73,12 @@ async def _generate_theme_palette(artist: str, title: str, sample_lyrics: list[s
         logger.debug(f"Dynamic theme palette generation failed: {e}")
 
     return [
-        f"{title} scenery photography",
-        f"{artist} concert visual",
-        f"{title} landscape scenery",
-        f"{artist} aesthetic background",
+        "city street night",
+        "coffee shop window",
+        "starry night sky",
+        "sunset horizon",
+        "rainy window evening",
+        "quiet park twilight",
     ]
 
 
@@ -117,8 +126,8 @@ async def image_agent_node(state: PipelineState) -> dict[str, Any]:
             candidate_queries = [
                 query,
                 theme_palette[i % len(theme_palette)],
-                f"{artist} {title} photography",
                 f"{title} landscape scenery",
+                "city night street",
             ]
 
             for tier_idx, q in enumerate(candidate_queries):

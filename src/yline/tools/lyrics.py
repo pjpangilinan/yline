@@ -47,23 +47,23 @@ def parse_lrc(lrc_text: str) -> list[dict[str, Any]]:
                 })
             
     # Calculate end_ms:
-    # 1. Estimate natural vocal duration based on word count (~400ms/word + 1500ms baseline padding).
-    #    Bounded between 3000ms (3.0s minimum read time) and 6500ms.
-    # 2. For natural vocal pauses (gap <= 5500ms), hold the subtitle continuously until the next line starts.
-    # 3. For long instrumental breaks (> 5500ms, e.g. guitar solo / bridge), display for natural vocal duration
-    #    and leave the remaining duration as a clean instrumental gap without freezing subtitles.
+    # 1. Estimate natural vocal duration based on word count (~500ms/word + 2000ms baseline padding).
+    #    Bounded between 4500ms (4.5s minimum vocal sustain) and 8000ms.
+    # 2. For natural musical transitions (gap <= 8000ms), hold the subtitle continuously until the next line starts.
+    # 3. For substantial instrumental breaks (> 8000ms, e.g. guitar solo / bridge), display for natural vocal duration
+    #    and leave the remaining duration as a clean instrumental break without freezing subtitles.
     for i in range(len(parsed_lines)):
         text_words = len(parsed_lines[i]["text"].split())
-        vocal_duration = max(3000, min(text_words * 400 + 1500, 6500))
+        vocal_duration = max(4500, min(text_words * 500 + 2000, 8000))
         
         if i < len(parsed_lines) - 1:
             next_start = parsed_lines[i + 1]["start_ms"]
             gap_to_next = next_start - parsed_lines[i]["start_ms"]
-            if gap_to_next <= 5500:
+            if gap_to_next <= 8000:
                 parsed_lines[i]["end_ms"] = next_start
             else:
-                display_dur = min(vocal_duration, gap_to_next - 2000)
-                parsed_lines[i]["end_ms"] = parsed_lines[i]["start_ms"] + max(2500, display_dur)
+                display_dur = min(vocal_duration, gap_to_next - 3000)
+                parsed_lines[i]["end_ms"] = parsed_lines[i]["start_ms"] + max(4000, display_dur)
         else:
             parsed_lines[i]["end_ms"] = parsed_lines[i]["start_ms"] + vocal_duration
             

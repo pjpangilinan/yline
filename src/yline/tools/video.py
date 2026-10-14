@@ -196,8 +196,8 @@ def assemble_video(
             if line_end <= current_time_sec:
                 line_end = next_start
 
-            # Avoid micro-flicker: if remaining pause to next line is short (< 0.5s), hold subtitle
-            if 0 < (next_start - line_end) < 0.5:
+            # Hold subtitle continuously if remaining pause to next line is under 3.5s
+            if 0 < (next_start - line_end) < 3.5:
                 line_end = next_start
         else:
             line_end = target_end
@@ -206,10 +206,10 @@ def assemble_video(
         timeline.append((img_p, text, round(line_dur, 4)))
         current_time_sec += line_dur
 
-        # 2c. Gap before next line if instrumental break >= 0.5s
+        # 2c. Gap before next line ONLY if significant instrumental break >= 3.5s
         if i < len(lyrics) - 1:
             next_start = lyrics[i + 1]["start_ms"] / 1000.0
-            if next_start > current_time_sec + 0.49:
+            if next_start > current_time_sec + 3.49:
                 gap_dur = next_start - current_time_sec
                 timeline.append((img_p, "", round(gap_dur, 4)))
                 current_time_sec = next_start
